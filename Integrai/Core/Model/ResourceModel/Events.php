@@ -22,7 +22,7 @@ class Events extends AbstractDb
 
     protected function _construct()
     {
-        $this->_init('integrai_config', 'id');
+        $this->_init('integrai_events', 'id');
     }
 
     protected function _beforeSave(AbstractModel $object)

@@ -4,12 +4,18 @@ namespace Integrai\Core\Model;
 
 class Api {
     private $_helper;
+    private $_eventsFactory;
+    private $_resourceInterface;
 
     public function __construct(
-        \Integrai\Core\Helper\Data $helper
+        \Integrai\Core\Helper\Data $helper,
+        \Integrai\Core\Model\EventsFactory $eventsFactory,
+        \Magento\Framework\Module\ResourceInterface $resourceInterface
     )
     {
         $this->_helper = $helper;
+        $this->_eventsFactory = $eventsFactory;
+        $this->_resourceInterface = $resourceInterface;
     }
 
     protected function _getHelper(){
@@ -44,7 +50,7 @@ class Api {
                 'info' => $info,
             ));
 
-            throw new Exception($response['error']);
+            throw new \Exception($response['error']);
         }
 
         curl_close($curl);
@@ -59,7 +65,7 @@ class Api {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
         $magentoVersion = $productMetadata->getVersion();;
-        $moduleVersion = \Magento\Framework\Module\ResourceInterface::getDbVersion('Integrai_Core');
+        $moduleVersion = $this->_resourceInterface->getDbVersion('Integrai_Core');
         $apiKey = $this->_getHelper()->getConfig('api_key');
         $secretKey = $this->_getHelper()->getConfig('secret_key');
         $token = base64_encode("{$apiKey}:{$secretKey}");
@@ -68,45 +74,43 @@ class Api {
             "Content-Type: application/json",
             "Accept: application/json",
             "Authorization: Bearer {$token}",
-            "x-integrai-plaform: magento",
+            "x-integrai-plaform: magento2",
             "x-integrai-plaform-version: {$magentoVersion}",
             "x-integrai-module-version: {$moduleVersion}",
         );
     }
 
     public function sendEvent($eventName, $payload, $resend = false) {
-        $this->_getHelper()->log($eventName, $payload);
-//        try{
-//            $response = $this->request('/event/magento', 'POST', array(
-//                'event' => $eventName,
-//                'payload' => $payload,
-//            ));
-//            $this->_getHelper()->log($eventName, 'Enviado com sucesso');
-//            return $response;
-//        } catch (Exception $e) {
-//            if(!$resend) {
-//                $this->_backupEvent($eventName, $payload);
-//            } else {
-//                throw new Exception($e);
-//            }
-//        }
+        try{
+            $response = $this->request('/event/magento2', 'POST', array(
+                'event' => $eventName,
+                'payload' => $payload,
+            ));
+            $this->_getHelper()->log($eventName, 'Enviado com sucesso');
+            return $response;
+        } catch (\Exception $e) {
+            if(!$resend) {
+                $this->_backupEvent($eventName, $payload);
+            } else {
+                throw new \Exception($e);
+            }
+        }
     }
 
     private function _backupEvent($eventName, $payload) {
         $this->_getHelper()->log("Gravando no banco para mandar depois", $eventName);
 
-        return \Integrai\Core\Model\EventsFactory::create()
+        return $this->_eventsFactory->create()
             ->setData(array(
                 'event' => $eventName,
                 'payload' => json_encode($payload),
-                'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
             ))
             ->save();
     }
 
     public function resendBackupEvents() {
         if ($this->_getHelper()->isEnabled()) {
-            $eventsModel = \Integrai\Core\Model\EventsFactory::create();
+            $eventsModel = $this->_eventsFactory->create();
 
             $events = $eventsModel->getCollection();
 
