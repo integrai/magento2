@@ -1,0 +1,19 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+  <default>
+    <integrai_core>
+      <general>
+        <enable>1</enable>
+      </general>
+    </integrai_core>
+
+    <correios>
+      <integrai_shipping>
+        <active>1</active>
+        <model>Integrai\Core\Model\Carrier</model>
+        <name>Serviços de Entrega</name>
+        <title>Serviços de Entrega</title>
+        <type>I</type>
+      </integrai_shipping>
+    </correios>
+  </default>
+</config>

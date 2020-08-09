@@ -1,0 +1,23 @@
+{
+  "name": "integrai/core",
+  "description": "Magento 2 Integrai Extension",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Integrai",
+      "email": "contato@integrai.com.br",
+      "homepage": "https://www.integrai.com.br",
+      "role": "Technical Support"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Integrai\\Core\\": ""
+    }
+  }
+}
