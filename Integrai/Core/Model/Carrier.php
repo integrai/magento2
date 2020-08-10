@@ -1,6 +1,6 @@
 <?php
 
-namespace Integrai\Core\Model\Carrier;
+namespace Integrai\Core\Model;
 
 use Magento\Quote\Model\Quote\Address\RateRequest;
 
@@ -10,14 +10,68 @@ class Carrier
 
     protected $_code = 'integrai_shipping';
 
-    protected function _getHelper()
+    private $_helper;
+    private $_api;
+    private $_resultFactory;
+    private $_errorFactory;
+    private $_storeManager;
+
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Xml\Security $xmlSecurity,
+        \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
+        \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
+        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
+        \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
+        \Magento\Directory\Model\RegionFactory $regionFactory,
+        \Magento\Directory\Model\CountryFactory $countryFactory,
+        \Magento\Directory\Model\CurrencyFactory $currencyFactory,
+        \Magento\Directory\Helper\Data $directoryData,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
+        \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Integrai\Core\Helper\Data $helper,
+        \Integrai\Core\Model\Api $api,
+        array $data = []
+    )
     {
-        return new \Integrai\Core\Helper\Data();
+        $this->_errorFactory = $rateErrorFactory;
+        $this->_resultFactory = $rateResultFactory;
+        $this->_storeManager = $storeManager;
+        $this->_helper = $helper;
+        $this->_api = $api;
+
+        parent::__construct(
+            $scopeConfig,
+            $rateErrorFactory,
+            $logger,
+            $xmlSecurity,
+            $xmlElFactory,
+            $rateFactory,
+            $rateMethodFactory,
+            $trackFactory,
+            $trackErrorFactory,
+            $trackStatusFactory,
+            $regionFactory,
+            $countryFactory,
+            $currencyFactory,
+            $directoryData,
+            $stockRegistry,
+            $data
+        );
+    }
+
+    protected function _getHelper(){
+        return $this->_helper;
     }
 
     protected function _getApi()
     {
-        return new \Integrai\Core\Model\Api();
+        return $this->_api;
     }
 
     protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
@@ -25,27 +79,30 @@ class Carrier
         $this->setRequest($request);
     }
 
-
     public function collectRates(RateRequest $request){
-        try{
-            $params = $this->prepareParamsRequest($request);
-            $services = $this->_getApi()->request('/shipping/quote', 'POST', $params);
+        if ($this->getConfigFlag('active') && $this->_getHelper()->isEnabled()) {
+            try{
+                $params = $this->prepareParamsRequest($request);
+                $services = $this->_getApi()->request('/shipping/quote', 'POST', $params);
 
-            $result = \Magento\Shipping\Model\Rate\ResultFactory::create();
-            foreach ($services as $service) {
-                $result->append($this->transformRate($service));
+                $result = $this->_resultFactory->create();
+                foreach ($services as $service) {
+                    $result->append($this->transformRate($service));
+                }
+                return $result;
+            } catch (\Exception $e) {
+                $error = $this->_errorFactory->create();
+                $data  = [
+                    'carrier'       => $this->_code,
+                    'carrier_title' => $this->getConfigData('title'),
+                    'error_message' => $e->getMessage(),
+                ];
+                $error->setData($data);
+                return $error;
             }
-            return $result;
-        } catch (Exception $e) {
-            $error = \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory::create();
-            $data  = [
-                'carrier'       => $this->_code,
-                'carrier_title' => $this->_getHelper()->getCarrierConfig('title'),
-                'error_message' => $e->getMessage(),
-            ];
-            $error->setData($data);
-            return $error;
         }
+
+        return false;
     }
 
     private function prepareParamsRequest(RateRequest $request) {
@@ -121,11 +178,13 @@ class Carrier
             return $item->getProduct()->getData($key);
         }
 
-        $value = Mage::getResourceSingleton('catalog/product')->getAttributeRawValue(
-            $item->getProductId(),
-            $key,
-            $item->getProduct()->getStore()
-        );
+        $value = $item->getProduct()
+            ->getResource()
+            ->getAttributeRawValue(
+                $this->getProduct()->getId(),
+                $key,
+                $this->_storeManager->getStore()->getId()
+            );
 
         return $value ?: null;
     }

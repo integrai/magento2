@@ -6,14 +6,17 @@
       </general>
     </integrai_core>
 
-    <correios>
+    <carriers>
       <integrai_shipping>
         <active>1</active>
         <model>Integrai\Core\Model\Carrier</model>
         <name>Serviços de Entrega</name>
         <title>Serviços de Entrega</title>
-        <type>I</type>
+        <sallowspecific>0</sallowspecific>
+        <showmethod>1</showmethod>
+        <sort_order>0</sort_order>
+        <max_package_weight>300</max_package_weight>
       </integrai_shipping>
-    </correios>
+    </carriers>
   </default>
 </config>

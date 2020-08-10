@@ -3,10 +3,32 @@
     <tab id="integrai" translate="label" sortOrder="0">
       <label>Integrai</label>
     </tab>
-    <section id="integrai_core">
+    <section id="integrai_core" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+      <class>separator-top</class>
+      <label>Configurações de integração</label>
+      <tab>integrai</tab>
+      <resource>Integrai_Core::integrai_core_config</resource>
       <group id="general" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
         <label>Configurações de integração</label>
         <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+          <label>Habilitar</label>
+          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+        <field id="api_key" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+          <label>API Key</label>
+          <comment>Sua API Key criada no dashboard da IntegrAi</comment>
+        </field>
+        <field id="secret_key" translate="label" type="password" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+          <label>Secret Key</label>
+          <comment>Sua Secret Key criada no dashboard da IntegrAi</comment>
+        </field>
+      </group>
+    </section>
+
+    <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+      <group id="integrai_shipping" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Serviços de Entrega Integrai</label>
+        <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
           <label>Habilitar</label>
           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
         </field>
