@@ -40,9 +40,9 @@ class InstallData implements InstallDataInterface
             array(
                 'name' => 'SHIPPING',
                 'values' => '{
-                  "attribute_width": "width",
-                  "attribute_height": "height",
-                  "attribute_length": "length",
+                  "attribute_width": "ts_dimensions_width",
+                  "attribute_height": "ts_dimensions_height",
+                  "attribute_length": "ts_dimensions_length",
                   "width_default": 11,
                   "height_default": 2,
                   "length_default": 16

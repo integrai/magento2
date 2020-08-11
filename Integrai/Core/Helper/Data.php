@@ -32,10 +32,6 @@ class Data
         return $this->_scopeConfig->getValue("integrai_core/{$group}/{$name}");
     }
 
-    public function getCarrierConfig($name) {
-        return $this->_scopeConfig->getValue("carriers/integrai_shipping/{$name}");
-    }
-
     public function getConfigTable($name, $configName = null, $defaultValue = null) {
         $config = $this->_configFactory->create()->load($name, 'name');
         $values = json_decode($config->getData('values'), true);
