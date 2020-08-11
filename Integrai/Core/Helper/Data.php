@@ -55,8 +55,4 @@ class Data
     public function getGlobalConfig($configName, $defaultValue = null) {
         return $this->getConfigTable('GLOBAL', $configName, $defaultValue);
     }
-
-    public function isLoggedIn() {
-//        return Mage::getSingleton('customer/session')->isLoggedIn();
-    }
 }

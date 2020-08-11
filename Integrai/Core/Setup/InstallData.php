@@ -14,7 +14,7 @@ class InstallData implements InstallDataInterface
             array(
                 'name' => 'EVENTS_ENABLED',
                 'values' => '[
-                  "NEW_CUSTOMER",
+                  "SAVE_CUSTOMER",
                   "CUSTOMER_BIRTHDAY",
                   "NEWSLETTER_SUBSCRIBER",
                   "ADD_PRODUCT_CART",

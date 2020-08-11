@@ -31,9 +31,9 @@ class CustomerRegister implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::NEW_CUSTOMER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::SAVE_CUSTOMER)) {
             $customer = $this->_customer->load($observer->getData('customer_data_object')->getId());
-            return $this->_getApi()->sendEvent(Events::NEW_CUSTOMER, $customer->getData());
+            return $this->_getApi()->sendEvent(Events::SAVE_CUSTOMER, $customer->getData());
         }
     }
 }

@@ -107,24 +107,4 @@ class Api {
             ))
             ->save();
     }
-
-    public function resendBackupEvents() {
-        if ($this->_getHelper()->isEnabled()) {
-            $eventsModel = $this->_eventsFactory->create();
-
-            $events = $eventsModel->getCollection();
-
-            foreach ($events as $event) {
-                $eventName = $event->getData('event');
-                $payload = json_decode($event->getData('payload'), true);
-                try{
-                    $this->sendEvent($eventName, $payload, true);
-                    $this->_getHelper()->log('DELETE');
-                    $event->delete();
-                } catch (Exception $e) {
-                    $this->_getHelper()->log('Error ao reenviar o evento', $eventName, Zend_Log::ERR);
-                }
-            }
-        }
-    }
 }
