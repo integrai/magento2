@@ -1,6 +1,32 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- criação de conta de usuário -->
+    <event name="customer_save_after_data_object">
+        <observer name="integrai_customer_register" instance="Integrai\Core\Model\Observer\CustomerRegister" />
+    </event>
+
+    <!-- assinatura da newsletter -->
     <event name="newsletter_subscriber_save_after">
         <observer name="integrai_newsletter" instance="Integrai\Core\Model\Observer\Newsletter" />
+    </event>
+
+    <!-- adicionar produto ao carrinho -->
+    <event name="checkout_cart_product_add_after">
+        <observer name="integrai_add_cart" instance="Integrai\Core\Model\Observer\AddCart" />
+    </event>
+
+    <!-- criação de pedido -->
+    <event name="sales_order_place_after">
+        <observer name="integrai_new_order" instance="Integrai\Core\Model\Observer\NewOrder" />
+    </event>
+
+    <!-- antes de salvar pedido -->
+    <event name="sales_order_save_before">
+        <observer name="integrai_before_save_order" instance="Integrai\Core\Model\Observer\BeforeSaveOrder" />
+    </event>
+
+    <!-- cancelar pedido -->
+    <event name="order_cancel_after">
+        <observer name="integrai_cancel_order" instance="Integrai\Core\Model\Observer\CancelOrder" />
     </event>
 </config>
