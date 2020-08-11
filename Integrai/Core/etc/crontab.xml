@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job instance="Integrai\Core\Cron\CustomerBirthday" method="execute" name="integrai_customer_birthday">
+            <schedule>0 1 * * *</schedule>
+        </job>
+        <job instance="Integrai\Core\Cron\AbandonedCart" method="execute" name="integrai_abandoned_cart">
+            <schedule>0 */5 * * * </schedule>
+        </job>
+        <job instance="Integrai\Core\Cron\ResendEvents" method="execute" name="integrai_resend_events">
+            <schedule>* * * * *</schedule>
+        </job>
+    </group>
+</config>
