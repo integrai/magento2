@@ -82,7 +82,7 @@ class Api {
 
     public function sendEvent($eventName, $payload, $resend = false) {
         try{
-            $response = $this->request('/event/magento2', 'POST', array(
+            $response = $this->request('/store/event/magento2', 'POST', array(
                 'event' => $eventName,
                 'payload' => $payload,
             ));
