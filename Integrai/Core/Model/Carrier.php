@@ -80,10 +80,10 @@ class Carrier
     }
 
     public function collectRates(RateRequest $request){
-        if ($this->getConfigFlag('active') && $this->_getHelper()->isEnabled()) {
+        if ($this->_getHelper()->isEventEnabled(Events::QUOTE)) {
             try{
                 $params = $this->prepareParamsRequest($request);
-                $services = $this->_getApi()->request('/shipping/quote', 'POST', $params);
+                $services = $this->_getApi()->request('/quote/shipping', 'POST', $params);
 
                 $result = $this->_resultFactory->create();
                 foreach ($services as $service) {
@@ -193,9 +193,16 @@ class Carrier
     {
         $rate = $this->_rateMethodFactory->create();
 
+        $deliveryText = str_replace('%s', $service['deliveryTime'], $service['deliveryText']);
+        $methodTitle = '$methodTitle - $deliveryText';
+
         $rate->setCarrier($this->_code);
         $rate->setCarrierTitle($service['carrierTitle']);
         $rate->setMethod($service['methodCode']);
+        $rate->setMethodTitle(strtr($methodTitle, array(
+            '$methodTitle' => $service['methodTitle'],
+            '$deliveryText' => $deliveryText
+        )));
         $rate->setMethodTitle($service['methodTitle']);
         $rate->setMethodDescription($service['methodDescription']);
         $rate->setPrice($service['price']);

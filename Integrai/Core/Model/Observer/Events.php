@@ -11,4 +11,5 @@ class Events{
     const NEW_ORDER = 'NEW_ORDER';
     const SAVE_ORDER = 'SAVE_ORDER';
     const CANCEL_ORDER = 'CANCEL_ORDER';
+    const QUOTE = 'QUOTE';
 }
