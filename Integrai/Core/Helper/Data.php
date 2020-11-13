@@ -32,9 +32,14 @@ class Data
         return $this->_scopeConfig->getValue("integrai_core/{$group}/{$name}");
     }
 
-    public function getConfigTable($name, $configName = null, $defaultValue = null) {
+    public function getConfigTable($name, $configName = null, $defaultValue = null, $parseJson = true) {
         $config = $this->_configFactory->create()->load($name, 'name');
-        $values = json_decode($config->getData('values'), true);
+
+        if ($parseJson) {
+            $values = json_decode($config->getData('values'), true);
+        } else {
+            $values = $config->getData('values');
+        }
 
         if ($configName) {
             return $values[$configName] ?: $defaultValue;

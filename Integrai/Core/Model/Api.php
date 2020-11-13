@@ -48,6 +48,8 @@ class Api {
                 'error' => curl_error($curl),
                 'response' => $response,
                 'info' => $info,
+                'headers' => $this->getHeaders(),
+                'body' => $body,
             ));
 
             throw new \Exception($response['error']);
@@ -73,7 +75,7 @@ class Api {
         return array(
             "Content-Type: application/json",
             "Accept: application/json",
-            "Authorization: Bearer {$token}",
+            "Authorization: Basic {$token}",
             "x-integrai-plaform: magento2",
             "x-integrai-plaform-version: {$magentoVersion}",
             "x-integrai-module-version: {$moduleVersion}",

@@ -10,7 +10,6 @@
       <integrai_shipping>
         <active>1</active>
         <model>Integrai\Core\Model\Carrier</model>
-        <name>Serviços de Entrega</name>
         <title>Serviços de Entrega</title>
         <sallowspecific>0</sallowspecific>
         <showmethod>1</showmethod>
@@ -18,5 +17,20 @@
         <max_package_weight>300</max_package_weight>
       </integrai_shipping>
     </carriers>
+
+    <payment>
+      <integrai_boleto>
+        <active>1</active>
+        <model>Integrai\Core\Model\Payment\Boleto</model>
+        <title>Boleto</title>
+        <order_status>pending_payment</order_status>
+      </integrai_boleto>
+      <integrai_creditcard>
+        <active>1</active>
+        <model>Integrai\Core\Model\Payment\CreditCard</model>
+        <title>Cartão de Crédito</title>
+        <order_status>pending_payment</order_status>
+      </integrai_creditcard>
+    </payment>
   </default>
 </config>

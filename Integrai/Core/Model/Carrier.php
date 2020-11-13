@@ -2,6 +2,7 @@
 
 namespace Integrai\Core\Model;
 
+use Integrai\Core\Model\Observer\Events;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 
 class Carrier
@@ -79,7 +80,7 @@ class Carrier
         $this->setRequest($request);
     }
 
-    public function collectRates(RateRequest $request){
+    public function collectRates(RateRequest $request) {
         if ($this->_getHelper()->isEventEnabled(Events::QUOTE)) {
             try{
                 $params = $this->prepareParamsRequest($request);
@@ -181,7 +182,7 @@ class Carrier
         $value = $item->getProduct()
             ->getResource()
             ->getAttributeRawValue(
-                $this->getProduct()->getId(),
+                $item->getProduct()->getId(),
                 $key,
                 $this->_storeManager->getStore()->getId()
             );
@@ -195,6 +196,7 @@ class Carrier
 
         $deliveryText = str_replace('%s', $service['deliveryTime'], $service['deliveryText']);
         $methodTitle = '$methodTitle - $deliveryText';
+        $methodDescription = !empty($service['methodDescription']) ? $service['methodDescription'] : null;
 
         $rate->setCarrier($this->_code);
         $rate->setCarrierTitle($service['carrierTitle']);
@@ -204,7 +206,7 @@ class Carrier
             '$deliveryText' => $deliveryText
         )));
         $rate->setMethodTitle($service['methodTitle']);
-        $rate->setMethodDescription($service['methodDescription']);
+        $rate->setMethodDescription($methodDescription);
         $rate->setPrice($service['price']);
         $rate->setCost($service['cost']);
 

@@ -38,7 +38,7 @@ class Config extends \Magento\Framework\App\Action\Action
     {
         try{
             $this->_getHelper()->log('Buscando novas configurações...');
-            $configs = $this->_getApi()->request('/config');
+            $configs = $this->_getApi()->request('/store/config');
 
             foreach ($configs as $config) {
                 $configItem = $this->_configFactory->create()->load($config['name'], 'name');

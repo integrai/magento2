@@ -13,17 +13,7 @@ class InstallData implements InstallDataInterface
         $configs = array(
             array(
                 'name' => 'EVENTS_ENABLED',
-                'values' => '[
-                  "SAVE_CUSTOMER",
-                  "CUSTOMER_BIRTHDAY",
-                  "NEWSLETTER_SUBSCRIBER",
-                  "ADD_PRODUCT_CART",
-                  "ABANDONED_CART",
-                  "NEW_ORDER",
-                  "SAVE_ORDER",
-                  "CANCEL_ORDER",
-                  "FINALIZE_CHECKOUT"
-                ]',
+                'values' => '[]',
                 'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
                 'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
             ),
@@ -31,8 +21,8 @@ class InstallData implements InstallDataInterface
                 'name' => 'GLOBAL',
                 'values' => '{
                   "minutes_abandoned_cart_lifetime": 60,
-                  "api_url": "https://api.integrai.com.br/v1",
-                  "api_timeout_seconds": 3
+                  "api_url": "https://api.integrai.com.br",
+                  "api_timeout_seconds": 10
                 }',
                 'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
                 'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
