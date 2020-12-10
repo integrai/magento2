@@ -22,7 +22,7 @@ class InstallData implements InstallDataInterface
                 'values' => '{
                   "minutes_abandoned_cart_lifetime": 60,
                   "api_url": "https://api.integrai.com.br",
-                  "api_timeout_seconds": 10
+                  "api_timeout_seconds": 15
                 }',
                 'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
                 'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
