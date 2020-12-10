@@ -107,8 +107,14 @@ class Carrier
     }
 
     private function prepareParamsRequest(RateRequest $request) {
+        $zipCode = preg_replace('/[^0-9]/', '', $request->getDestPostcode());
+
+        if (strlen($zipCode) !== 8) {
+            throw new \Exception("CEP Inválido");
+        }
+
         return array(
-            "destination_zipcode" => $request->getDestPostcode(),
+            "destination_zipcode" => $zipCode,
             "cart_total_price" => $request->getPackageValue(),
             "cart_total_quantity" => $request->getPackageQty(),
             "cart_total_weight" => $request->getPackageWeight(),
