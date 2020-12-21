@@ -5,6 +5,10 @@
             <values>
                 <value id="integrai" type="host">*.integrai.com.br</value>
                 <value id="moip" type="host">*.moip.com.br</value>
+                <value id="pagar" type="host">*.pagar.me</value>
+                <value id="mlstatic" type="host">*.mlstatic.com</value>
+                <value id="mercadolibre" type="host">*.mercadolibre.com</value>
+                <value id="mercadopago" type="host">*.mercadopago.com</value>
             </values>
         </policy>
     </policies>

@@ -18,7 +18,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
     public function getConfig(){
         return [
             'integrai_boleto' => $this->_getHelper()->getConfigTable('PAYMENT_BOLETO', null, null, false),
-            'integrai_creditcard' => $this->_getHelper()->getConfigTable('PAYMENT_CREDITCARD', null, null, false),
+            'integrai_creditcard' => $this->_getHelper()->getConfigTable('PAYMENT_CREDITCARD'),
         ];
     }
 }

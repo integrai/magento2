@@ -16,8 +16,8 @@
             <!--/ko-->
         </div>
 
-        <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
-            <div data-bind="html: window.checkoutConfig.integrai_creditcard"></div>
+        <form class="form" data-bind="attr: {'id': getCode() + '-form'}" data-mage-init='{"validation":{}}'>
+            <div id="integrai-payment"></div>
         </form>
 
         <div class="checkout-agreements-block">
