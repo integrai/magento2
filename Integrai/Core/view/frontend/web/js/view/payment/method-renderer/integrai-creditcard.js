@@ -25,7 +25,7 @@ define(
             getData: function () {
                 const card_hashs = {};
 
-                $('input[name^="payment[additional_data][card_hash_"]').each(function() {
+                this.getFieldsHash().each(function() {
                     const elem = $(this);
                     const name = elem.attr('name').match(/\w+\[(\w+)\]\[(\w+)\]/)[2];
                     const value = elem.val();
@@ -33,8 +33,6 @@ define(
                         [name]: value,
                     });
                 });
-
-                console.log('card_hashs', card_hashs);
 
                 return {
                     method: this.item.method,
@@ -44,13 +42,29 @@ define(
                 };
             },
 
+            getFieldsHash: function () {
+                return $('input[name^="payment[additional_data][card_hash_"]');
+            },
+
             isActive: function() {
                 return true;
             },
 
             validate: function() {
-                var $form = $('#' + this.getCode() + '-form');
-                return $form.validation() && $form.validation('isValid');
+                const $form = $('#' + this.getCode() + '-form');
+                return this.hasFieldsHash() && $form.validation() && $form.validation('isValid');
+            },
+
+            hasFieldsHash: function () {
+                let totalHash = 0;
+
+                this.getFieldsHash().each(function() {
+                    if ($(this).val() !== '') {
+                        totalHash++;
+                    }
+                });
+
+                return totalHash > 0;
             },
 
             loadScripts: function () {
