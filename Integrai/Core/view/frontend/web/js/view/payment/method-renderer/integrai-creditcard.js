@@ -68,12 +68,12 @@ define(
             },
 
             loadScripts: function () {
-                const integraiCreditcard = window.checkoutConfig.integrai_creditcard;
+                const {
+                    formOptions = {},
+                    scripts = [],
+                } = window.checkoutConfig.integrai_creditcard || {};
 
-                const scripts = [
-                    integraiCreditcard.form,
-                    ...integraiCreditcard.gateways,
-                ];
+                window.Integrai = formOptions;
 
                 scripts.forEach(function (script) {
                     let scriptElm = document.createElement('script');
