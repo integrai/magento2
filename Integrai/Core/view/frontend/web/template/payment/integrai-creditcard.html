@@ -17,7 +17,7 @@
         </div>
 
         <form class="form" data-bind="attr: {'id': getCode() + '-form'}" data-mage-init='{"validation":{}}'>
-            <div id="integrai-payment"></div>
+            <div id="integrai-payment" data-bind="afterRender: loadScripts()"></div>
         </form>
 
         <div class="checkout-agreements-block">

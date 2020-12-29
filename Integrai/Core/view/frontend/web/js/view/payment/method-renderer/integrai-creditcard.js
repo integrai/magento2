@@ -15,7 +15,6 @@ define(
 
             initialize: function() {
                 this._super();
-                this.loadScripts();
             },
 
             getCode: function() {
