@@ -21,7 +21,7 @@ class Data
     public function log($message, $array = null, $level = null)
     {
         if (!is_null($array)) {
-            $message .= " - " . json_encode($array);
+            $message .= " - " . json_encode($array, JSON_PRETTY_PRINT);
         }
 
         $this->_logger->setName("integrai");
