@@ -13,36 +13,28 @@ define(
                 template: 'Integrai_Core/payment/integrai-creditcard'
             },
 
-            initialize: function() {
-                this._super();
-            },
-
             getCode: function() {
                 return 'integrai_creditcard';
             },
 
             getData: function () {
-                const card_hashs = {};
-
-                this.getFieldsHash().each(function() {
-                    const elem = $(this);
-                    const name = elem.attr('name').match(/\w+\[(\w+)\]\[(\w+)\]/)[2];
-                    const value = elem.val();
-                    Object.assign(card_hashs, {
-                        [name]: value,
-                    });
-                });
-
                 return {
                     method: this.item.method,
-                    additional_data: {
-                        ...card_hashs,
-                    }
+                    additional_data: this.getFieldsAdditionalData(),
                 };
             },
 
-            getFieldsHash: function () {
-                return $('input[name^="payment[additional_data][card_hash_"]');
+            getFieldsAdditionalData: function () {
+                const additional_data = {};
+                $('input[name^="payment[additional_data]"]').each(function() {
+                    const elem = $(this);
+                    const name = elem.attr('name').match(/\w+\[(\w+)\]\[(\w+)\]/)[2];
+                    const value = elem.val();
+                    Object.assign(additional_data, {
+                        [name]: value,
+                    });
+                });
+                return additional_data;
             },
 
             isActive: function() {
@@ -51,17 +43,16 @@ define(
 
             validate: function() {
                 const $form = $('#' + this.getCode() + '-form');
-                return this.hasFieldsHash() && $form.validation() && $form.validation('isValid');
+                return $form.validation() && $form.validation('isValid') && this.hasFieldsHash();
             },
 
             hasFieldsHash: function () {
-                let totalHash = 0;
+                const additional_data = this.getFieldsAdditionalData();
 
-                this.getFieldsHash().each(function() {
-                    if ($(this).val() !== '') {
-                        totalHash++;
-                    }
-                });
+                const totalHash = Object.keys(additional_data)
+                    .filter(key => key.indexOf('card_hash_') > -1)
+                    .map(key => additional_data[key])
+                    .filter(value => !!value).length;
 
                 return totalHash > 0;
             },
@@ -72,7 +63,10 @@ define(
                     scripts = [],
                 } = window.checkoutConfig.integrai_creditcard || {};
 
-                window.Integrai = formOptions;
+                window.IntegraiCreditCard = {
+                    ...formOptions,
+                    amount: window.checkoutConfig.integrai_amount
+                };
 
                 scripts.forEach(function (script) {
                     let scriptElm = document.createElement('script');

@@ -13,4 +13,19 @@ class Boleto extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return true;
     }
+
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        parent::assignData($data);
+
+        $additional_data = $data->getData('additional_data');
+        $info = $this->getInfoInstance();
+        if (isset($additional_data)) {
+            foreach ($additional_data as $key => $value) {
+                $info->setAdditionalInformation($key, $value);
+            }
+        }
+
+        return $this;
+    }
 }
