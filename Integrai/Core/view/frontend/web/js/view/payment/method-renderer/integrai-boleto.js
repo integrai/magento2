@@ -28,11 +28,23 @@ define(
                 const additional_data = {};
                 $('input[name^="payment[additional_data]"]').each(function() {
                     const elem = $(this);
-                    const name = elem.attr('name').match(/\w+\[(\w+)\]\[(\w+)\]/)[2];
+                    const elemName = elem.attr('name');
+                    const name = elemName.match(/\w+\[(\w+)\]\[(\w+)\]/)[2];
+                    const subNameMatch = elemName.match(/\w+\[(\w+)\]\[(\w+)\]\[(\w+)\]/);
+                    const subName = subNameMatch ? subNameMatch[3] : null;
                     const value = elem.val();
-                    Object.assign(additional_data, {
-                        [name]: value,
-                    });
+
+                    if(subName){
+                        Object.assign(additional_data, {
+                            [name]: JSON.stringify({
+                                [subName]: value
+                            }),
+                        });
+                    } else {
+                        Object.assign(additional_data, {
+                            [name]: value,
+                        });
+                    }
                 });
                 return additional_data;
             },
