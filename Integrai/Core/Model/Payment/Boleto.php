@@ -22,6 +22,10 @@ class Boleto extends \Magento\Payment\Model\Method\AbstractMethod
         $info = $this->getInfoInstance();
         if (isset($additional_data)) {
             foreach ($additional_data as $key => $value) {
+                if (is_object(json_decode($value))) {
+                    $value = json_decode($value);
+                }
+
                 $info->setAdditionalInformation($key, $value);
             }
         }

@@ -26,7 +26,7 @@ define(
 
             getFieldsAdditionalData: function () {
                 const additional_data = {};
-                $('input[name^="payment[additional_data]"]').each(function() {
+                $('input[name^="payment[additional_data]"], select[name^="payment[additional_data]"], textarea[name^="payment[additional_data]"]').each(function() {
                     const elem = $(this);
                     const elemName = elem.attr('name');
                     const name = elemName.match(/\w+\[(\w+)\]\[(\w+)\]/)[2];

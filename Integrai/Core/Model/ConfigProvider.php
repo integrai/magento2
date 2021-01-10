@@ -62,8 +62,8 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
             'integrai_amount' => (float)$quote->getBaseGrandTotal(),
             'integrai_customer' => array_merge($customerInfo, array(
                 "companyName" => $billing_address['company'],
-                "addressStreet" => isset($street) ? $street[0] : "",
-                "addressNumber" => isset($street) ? $street[1] : "",
+                "addressStreet" => isset($street[0]) ? $street[0] : "",
+                "addressNumber" => isset($street[1]) ? $street[1] : "",
                 "addressCity" => $billing_address['city'],
                 "addressState" => $regionCode,
                 "addressZipCode" => $billing_address['postcode'],

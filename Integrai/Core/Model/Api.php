@@ -41,6 +41,7 @@ class Api {
 
         $response = json_decode(curl_exec($curl), true);
         $info = curl_getinfo($curl);
+        $response_error = isset($response['error']) ? $response['error'] : "Ocorreu um erro, tente novamente";
 
         if($info['http_code'] !== 200) {
             $this->_getHelper()->log("HTTP ERROR", array(
@@ -52,7 +53,7 @@ class Api {
                 'body' => $body,
             ));
 
-            throw new \Exception($response['error']);
+            throw new \Exception($response_error);
         }
 
         curl_close($curl);
