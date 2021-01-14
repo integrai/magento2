@@ -1,0 +1,43 @@
+<?php
+/**
+ * @var Integrai\Core\Block\PageSuccess $block
+ */
+
+$order = $this->getOrder();
+$payment = $order->getPayment();
+
+$order = json_encode(array(
+    "order_entity_id" => $order->getEntityId(),
+    "order_increment_id" => $order->getIncrementId(),
+    "order_link_detail" => $block->escapeUrl($block->getOrderUrl()),
+    "payment_method" => $payment->getMethodInstance()->getCode(),
+    "store_url" => $block->getBaseUrl(),
+    "boleto_url" => $block->getUrl('integrai/payment/boleto', array(
+        '_query' => array(
+            'order_id' => $order->getIncrementId()
+        )
+    )),
+));
+
+$pageSuccess = json_encode($block->getIntegraiConfigs());
+?>
+
+<script>
+    const {
+        pageOptions = {},
+        scripts = [],
+    } = JSON.parse('<?php echo $pageSuccess ?>');
+
+    window.IntegraiSuccess = {
+        ...pageOptions,
+        order: JSON.parse('<?php echo $order ?>'),
+    };
+
+    scripts.forEach(function (script) {
+        let scriptElm = document.createElement('script');
+        scriptElm.src = script;
+        document.head.appendChild(scriptElm);
+    });
+</script>
+
+<div id="integrai-payment-success"></div>
