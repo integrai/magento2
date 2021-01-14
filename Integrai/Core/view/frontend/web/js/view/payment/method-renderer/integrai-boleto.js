@@ -37,6 +37,7 @@ define(
                     if(subName){
                         Object.assign(additional_data, {
                             [name]: JSON.stringify({
+                                ...JSON.parse(additional_data[name] || '{}'),
                                 [subName]: value
                             }),
                         });

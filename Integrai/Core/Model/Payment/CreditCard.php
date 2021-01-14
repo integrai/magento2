@@ -20,16 +20,7 @@ class CreditCard extends \Magento\Payment\Model\Method\AbstractMethod
 
         $additional_data = $data->getData('additional_data');
         $info = $this->getInfoInstance();
-        if (isset($additional_data)) {
-            foreach ($additional_data as $key => $value) {
-                if (is_object(json_decode($value))) {
-                    $value = json_decode($value);
-                }
-
-                $info->setAdditionalInformation($key, $value);
-            }
-        }
-
+        $info->setAdditionalInformation($additional_data);
         return $this;
     }
 }

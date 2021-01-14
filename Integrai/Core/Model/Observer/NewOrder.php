@@ -42,32 +42,35 @@ class NewOrder implements ObserverInterface{
 
             $billing = $order->getBillingAddress()->getData();
             $billing_street = $order->getBillingAddress()->getStreet();
-            $billing['street_1'] = isset($billing_street) ? $billing_street[0] : "";
-            $billing['street_2'] = isset($billing_street) ? $billing_street[1] : "";
-            $billing['street_3'] = isset($billing_street) ? $billing_street[2] : "";
-            $billing['street_4'] = isset($billing_street) ? $billing_street[3] : "";
+            $billing['street_1'] = isset($billing_street[0]) ? $billing_street[0] : "";
+            $billing['street_2'] = isset($billing_street[1]) ? $billing_street[1] : "";
+            $billing['street_3'] = isset($billing_street[2]) ? $billing_street[2] : "";
+            $billing['street_4'] = isset($billing_street[3]) ? $billing_street[3] : "";
             $billing['region_code'] = $order->getBillingAddress()->getRegionCode();
 
             $shipping = $order->getShippingAddress()->getData();
             $shipping_street = $order->getBillingAddress()->getStreet();
-            $shipping['street_1'] = isset($shipping_street) ? $shipping_street[0] : "";
-            $shipping['street_2'] = isset($shipping_street) ? $shipping_street[1] : "";
-            $shipping['street_3'] = isset($shipping_street) ? $shipping_street[2] : "";
-            $shipping['street_4'] = isset($shipping_street) ? $shipping_street[3] : "";
+            $shipping['street_1'] = isset($shipping_street[0]) ? $shipping_street[0] : "";
+            $shipping['street_2'] = isset($shipping_street[1]) ? $shipping_street[1] : "";
+            $shipping['street_3'] = isset($shipping_street[2]) ? $shipping_street[2] : "";
+            $shipping['street_4'] = isset($shipping_street[3]) ? $shipping_street[3] : "";
             $shipping['region_code'] = $order->getShippingAddress()->getRegionCode();
 
             $items = array();
-            foreach ($order->getAllVisibleItems() as $item) {
+            foreach ($order->getAllItems() as $item) {
                 $items[] = $item->getData();
             }
 
             $payment = $order->getPayment()->getData();
-            $card_hashs = $payment['additional_information']['card_hashs'];
-            if(isset($card_hashs)) {
-                $payment['additional_information']['card_hashs'] = json_decode($card_hashs);
-            }
 
-            $this->_getHelper()->log('payment', $payment);
+            $additional_information = $payment['additional_information'];
+            if (isset($additional_information)) {
+                foreach ($additional_information as $key => $value) {
+                    if (is_string($value) && is_object(json_decode($value))) {
+                        $payment['additional_information'][$key] = json_decode($value);
+                    }
+                }
+            }
 
             $data = new \Magento\Framework\DataObject();
             $data->setOrder($order->getData());
