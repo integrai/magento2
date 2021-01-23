@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <body>
-    <referenceBlock name="page.main.title">
-        <action method="setPageTitle">
-            <argument translate="true" name="title" xsi:type="string"> </argument>
-        </action>
-    </referenceBlock>
+    <referenceBlock name="page.main.title" remove="true" />
     <referenceContainer name="content">
         <block class="Integrai\Core\Block\PageSuccess" name="order.details.success" template="Integrai_Core::order/success.phtml" after="-">
         </block>
