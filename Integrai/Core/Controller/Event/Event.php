@@ -43,6 +43,10 @@ class Event extends \Magento\Framework\App\Action\Action
             $events = $this->_getApi()->request('/store/event');
 
             $success = [];
+            $errors = [];
+
+            $this->_getHelper()->log('Total de eventos a processar: ', count($events));
+
             foreach ($events as $event) {
                 $eventId = $event['_id'];
                 $payload = $event['payload'];
@@ -56,7 +60,8 @@ class Event extends \Magento\Framework\App\Action\Action
                             $modelArgs = $this->transformArgs($modelValue);
                             $modelMethods = $modelValue['methods'];
 
-                            $model = call_user_func_array(array($this->_objectManager, "create"), $modelArgs);
+                            $model = call_user_func_array(array($this->_objectManager, "get"), $modelArgs);
+                            $model = $model->create();
 
                             foreach($modelMethods as $methodKey => $methodValue) {
                                 $methodName = $methodValue['name'];
@@ -76,6 +81,8 @@ class Event extends \Magento\Framework\App\Action\Action
                 } catch (Exception $e) {
                     $this->_getHelper()->log('Erro ao processar o evento', $event);
                     $this->_getHelper()->log('Erro', $e->getMessage());
+
+                    array_push($errors, $eventId);
                 }
             }
 
@@ -85,6 +92,11 @@ class Event extends \Magento\Framework\App\Action\Action
                     'event_ids' => $success
                 ));
             }
+
+            $this->_getHelper()->log('Eventos processados: ', array(
+                'success' => $success,
+                'errors' => $errors
+            ));
 
             return $this->_resultJsonFactory->create()->setData(array(
                 'ok' => true
@@ -110,7 +122,7 @@ class Event extends \Magento\Framework\App\Action\Action
             $argsFormatted = array_values($args);
 
             foreach($argsFormatted as $arg){
-                if(is_array($arg) && $arg['otherModelName']) {
+                if(is_array($arg) && isset($arg['otherModelName'])) {
                     array_push($newArgs, $this->getOtherModel($arg['otherModelName']));
                 } else {
                     array_push($newArgs, $arg);

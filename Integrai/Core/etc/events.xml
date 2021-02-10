@@ -20,9 +20,9 @@
         <observer name="integrai_new_order" instance="Integrai\Core\Model\Observer\NewOrder" />
     </event>
 
-    <!-- antes de salvar pedido -->
-    <event name="sales_order_save_before">
-        <observer name="integrai_before_save_order" instance="Integrai\Core\Model\Observer\BeforeSaveOrder" />
+    <!-- depois de salvar pedido -->
+    <event name="sales_order_save_after">
+        <observer name="integrai_after_save_order" instance="Integrai\Core\Model\Observer\AfterSaveOrder" />
     </event>
 
     <!-- cancelar pedido -->

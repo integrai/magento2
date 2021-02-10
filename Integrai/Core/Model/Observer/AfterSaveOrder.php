@@ -5,7 +5,7 @@ namespace Integrai\Core\Model\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Integrai\Core\Model\Observer\Events;
 
-class NewOrder implements ObserverInterface{
+class AfterSaveOrder implements ObserverInterface{
     private $_helper;
     private $_api;
     private $_customer;
@@ -31,7 +31,7 @@ class NewOrder implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::NEW_ORDER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::SAVE_ORDER)) {
             $order = $observer->getEvent()->getOrder();
             $customer = $this->_customer->load($order->getCustomerId())->getData();
 
@@ -79,7 +79,7 @@ class NewOrder implements ObserverInterface{
             $data->setItems($items);
             $data->setShippingMethod($order->getShippingMethod());
 
-            return $this->_getApi()->sendEvent(Events::NEW_ORDER, $data->getData());
+            return $this->_getApi()->sendEvent(Events::SAVE_ORDER, $data->getData());
         }
     }
 }
