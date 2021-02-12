@@ -9,6 +9,8 @@
                 <value id="mlstatic" type="host">*.mlstatic.com</value>
                 <value id="mercadolibre" type="host">*.mercadolibre.com</value>
                 <value id="mercadopago" type="host">*.mercadopago.com</value>
+                <value id="rdstation" type="host">*.rdstation.com.br</value>
+                <value id="rdstation-cloudfront" type="host">d335luupugsy2.cloudfront.net</value>
             </values>
         </policy>
     </policies>
