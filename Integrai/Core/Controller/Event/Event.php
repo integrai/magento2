@@ -60,8 +60,7 @@ class Event extends \Magento\Framework\App\Action\Action
                             $modelArgs = $this->transformArgs($modelValue);
                             $modelMethods = $modelValue['methods'];
 
-                            $model = call_user_func_array(array($this->_objectManager, "get"), $modelArgs);
-                            $model = $model->create();
+                            $model = call_user_func_array(array($this->_objectManager, "create"), $modelArgs);
 
                             foreach($modelMethods as $methodKey => $methodValue) {
                                 $methodName = $methodValue['name'];
