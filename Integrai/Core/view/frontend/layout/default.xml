@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<body>
+    <referenceContainer name="before.body.end">
+        <block class="Integrai\Core\Block\AllPages" name="js.beforebody" as="jsbeforebody" template="Integrai_Core::allpages.phtml"/>
+    </referenceContainer>
+</body>
