@@ -3,7 +3,7 @@
  * @var Integrai\Core\Block\AllPages $block
  */
 
-$scripts = json_encode($block->getIntegraiConfigs());
+$scripts = $block->getIntegraiConfigs();
 
 foreach ($scripts as $script) {
     echo $script;
