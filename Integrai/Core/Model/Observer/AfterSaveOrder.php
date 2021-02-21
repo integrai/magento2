@@ -33,7 +33,7 @@ class AfterSaveOrder implements ObserverInterface{
         return $this->_api;
     }
 
-    public function execute(\Magento\Framework\Event\Observer $observer){
+    public function execute(\Magento\Framework\Event\Observer $observer) {
         if ($this->_getHelper()->isEventEnabled(Events::SAVE_ORDER)) {
             $order = $observer->getEvent()->getOrder();
             $customer = $this->getCustomerInfo($order);
@@ -43,24 +43,12 @@ class AfterSaveOrder implements ObserverInterface{
 
             $billing = array();
             if ($order->getBillingAddress()) {
-                $billing = $order->getBillingAddress()->getData();
-                $billing_street = $order->getBillingAddress()->getStreet();
-                $billing['street_1'] = isset($billing_street[0]) ? $billing_street[0] : "";
-                $billing['street_2'] = isset($billing_street[1]) ? $billing_street[1] : "";
-                $billing['street_3'] = isset($billing_street[2]) ? $billing_street[2] : "";
-                $billing['street_4'] = isset($billing_street[3]) ? $billing_street[3] : "";
-                $billing['region_code'] = $order->getBillingAddress()->getRegionCode();
+                $billing = $this->getAddress($billing, $order->getBillingAddress());
             }
 
             $shipping = array();
             if ($order->getShippingAddress()) {
-                $shipping = $order->getShippingAddress()->getData();
-                $shipping_street = $order->getBillingAddress()->getStreet();
-                $shipping['street_1'] = isset($shipping_street[0]) ? $shipping_street[0] : "";
-                $shipping['street_2'] = isset($shipping_street[1]) ? $shipping_street[1] : "";
-                $shipping['street_3'] = isset($shipping_street[2]) ? $shipping_street[2] : "";
-                $shipping['street_4'] = isset($shipping_street[3]) ? $shipping_street[3] : "";
-                $shipping['region_code'] = $order->getShippingAddress()->getRegionCode();
+                $shipping = $this->getAddress($shipping, $order->getShippingAddress());
             }
 
             $items = array();
@@ -92,6 +80,17 @@ class AfterSaveOrder implements ObserverInterface{
         }
     }
 
+    protected function getAddress($oldAddress, $orderAddress) {
+        $address = $orderAddress->getData();
+        $address_street = $orderAddress->getStreet();
+        $address['street_1'] = isset($address_street[0]) ? $address_street[0] : "";
+        $address['street_2'] = isset($address_street[1]) ? $address_street[1] : "";
+        $address['street_3'] = isset($address_street[2]) ? $address_street[2] : "";
+        $address['street_4'] = isset($address_street[3]) ? $address_street[3] : "";
+        $address['region_code'] = $orderAddress->getRegionCode();
+        return array_merge($oldAddress, $address);
+    }
+
     protected function getCustomerInfo($order) {
         $customer = new \Magento\Framework\DataObject();
 
@@ -104,7 +103,6 @@ class AfterSaveOrder implements ObserverInterface{
             $customer->setEntityId($quote->getCustomerId());
             $customer->setGroupId($quote->getCustomerGroupId());
             $customer->setFirstname($quote->getCustomerFirstname() ? $quote->getCustomerFirstname() : $billing['firstname']);
-            $customer->setLastname($quote->getCustomerLastname() ? $quote->getCustomerLastname() : $billing['lastname']);
             $customer->setLastname($quote->getCustomerLastname() ? $quote->getCustomerLastname() : $billing['lastname']);
             $customer->setTaxvat($quote->getCustomerTaxvat() ? $quote->getCustomerTaxvat() : $billing['vat_id']);
             $customer->setEmail($quote->getCustomerEmail());
