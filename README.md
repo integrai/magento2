@@ -43,4 +43,4 @@ php bin/magento setup:upgrade
     * `Mostrar data de aniversário (Show Date of Birth)` com valor `Requerido (Required)`
     * `Mostrar número documento (Show Tax/VAT Number)` com valor `Requerido (Required)`
     * `Mostrar gênero (Show Gender)` com valor `Requerido (Required)`
-6. Salve as configuraçõesx
+6. Salve as configurações

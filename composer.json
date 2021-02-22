@@ -3,7 +3,17 @@
   "description": "Magento 2 Integrai Extension",
   "type": "magento2-module",
   "version": "1.0.0",
-  "license": "proprietary",
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "keywords": [
+    "integrai",
+    "magento 2",
+    "integrai magento 2",
+    "magento 2 module",
+    "magento2-module"
+  ],
   "authors": [
     {
       "name": "Integrai",
@@ -12,6 +22,9 @@
       "role": "Technical Support"
     }
   ],
+  "require": {
+    "php": "~5.5.0|~5.6.0|~7.0.0"
+  },
   "autoload": {
     "files": [
       "registration.php"
