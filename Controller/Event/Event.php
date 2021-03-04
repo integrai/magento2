@@ -48,6 +48,8 @@ class Event extends \Magento\Framework\App\Action\Action
             $this->_getHelper()->log('Total de eventos a processar: ', count($events));
 
             foreach ($events as $event) {
+                $this->_getHelper()->log('Evento a processar', $event);
+
                 $eventId = $event['_id'];
                 $payload = $event['payload'];
 
@@ -69,8 +71,8 @@ class Event extends \Magento\Framework\App\Action\Action
 
                     array_push($success, $eventId);
                 } catch (Exception $e) {
-                    $this->_getHelper()->log('Erro ao processar o evento', $event);
                     $this->_getHelper()->log('Erro', $e->getMessage());
+                    $this->_getHelper()->log('Erro ao processar o evento', $event);
 
                     array_push($errors, $eventId);
                 }
@@ -101,19 +103,17 @@ class Event extends \Magento\Framework\App\Action\Action
     }
 
     private function runMethods($model, $modelMethods) {
-        $newModel = null;
-
         foreach($modelMethods as $methodKey => $methodValue) {
             $methodName = $methodValue['name'];
             $methodRun = (bool)$methodValue['run'];
 
-            if($methodRun) {
+            if($methodRun && $model) {
                 $methodArgs = $this->transformArgs($methodValue);
-                $newModel = call_user_func_array(array($model, $methodName), $methodArgs);
+                $model = call_user_func_array(array($model, $methodName), $methodArgs);
             }
         }
 
-        return $newModel;
+        return $model;
     }
 
     private function getOtherModel($modelName) {
