@@ -5,8 +5,9 @@
 
 $scripts = $block->getIntegraiConfigs();
 
-foreach ($scripts as $script) {
-    echo $script;
+if(isset($scripts) && count($scripts) > 0) {
+    foreach ($scripts as $script) {
+        echo $script;
+    }
 }
-
 ?>
