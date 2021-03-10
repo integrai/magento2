@@ -81,9 +81,10 @@ class Event extends \Magento\Framework\App\Action\Action
             }
 
             // Delete events with success
-            if(count($success) > 0){
+            if (count($success) > 0 || count($errors) > 0) {
                 $this->_getApi()->request('/store/event', 'DELETE', array(
-                    'event_ids' => $success
+                    'event_ids' => $success,
+                    'errors' => $errors
                 ));
             }
 
