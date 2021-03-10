@@ -69,11 +69,14 @@ class Event extends \Magento\Framework\App\Action\Action
                     }
 
                     array_push($success, $eventId);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $this->_getHelper()->log('Erro', $e->getMessage());
                     $this->_getHelper()->log('Erro ao processar o evento', $event);
 
-                    array_push($errors, $eventId);
+                    array_push($errors, array(
+                        "eventId" => $eventId,
+                        "error" => $e->getMessage()
+                    ));
                 }
             }
 
