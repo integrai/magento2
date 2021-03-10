@@ -39,7 +39,6 @@ class Event extends \Magento\Framework\App\Action\Action
 
     public function execute() {
         try{
-
             $events = $this->_getApi()->request('/store/event');
 
             $success = [];
@@ -130,7 +129,8 @@ class Event extends \Magento\Framework\App\Action\Action
             foreach($argsFormatted as $arg){
                 if(is_array($arg) && isset($arg['otherModelName'])) {
                     $model = $this->getOtherModel($arg['otherModelName']);
-                    if ($arg['otherModelMethods']) {
+
+                    if (isset($arg['otherModelMethods'])) {
                         array_push($newArgs, $this->runMethods($model, $arg['otherModelMethods']));
                     } else {
                         array_push($newArgs, $model);
