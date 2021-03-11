@@ -56,6 +56,8 @@ class Config extends \Magento\Framework\App\Action\Action
                 }
             }
 
+            $this->_getHelper()->log('Configurações atualizadas com sucesso!');
+
             return $this->_resultJsonFactory->create()->setData(array(
                 "ok" => true,
             ));

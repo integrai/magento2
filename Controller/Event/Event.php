@@ -39,7 +39,13 @@ class Event extends \Magento\Framework\App\Action\Action
 
     public function execute() {
         try{
-            $events = $this->_getApi()->request('/store/event');
+            $batchId = isset($_GET['batchId']) ? trim($_GET['batchId']) : "";
+            $events = $this->_getApi()->request(
+                '/store/event',
+                'GET',
+                null,
+                array("batchId" => $batchId)
+            );
 
             $success = [];
             $errors = [];
