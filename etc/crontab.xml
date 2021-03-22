@@ -5,9 +5,12 @@
             <schedule>0 1 * * *</schedule>
         </job>
         <job instance="Integrai\Core\Cron\AbandonedCart" method="execute" name="integrai_abandoned_cart">
-            <schedule>0 */5 * * * </schedule>
+            <schedule>0 */5 * * *</schedule>
         </job>
         <job instance="Integrai\Core\Cron\ResendEvents" method="execute" name="integrai_resend_events">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job instance="Integrai\Core\Cron\ProcessEvents" method="execute" name="integrai_process_events">
             <schedule>* * * * *</schedule>
         </job>
     </group>

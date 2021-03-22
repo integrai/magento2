@@ -5,17 +5,14 @@ namespace Integrai\Core\Model;
 class Api {
     private $_helper;
     private $_eventsFactory;
-    private $_resourceInterface;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
-        \Integrai\Core\Model\EventsFactory $eventsFactory,
-        \Magento\Framework\Module\ResourceInterface $resourceInterface
+        \Integrai\Core\Model\EventsFactory $eventsFactory
     )
     {
         $this->_helper = $helper;
         $this->_eventsFactory = $eventsFactory;
-        $this->_resourceInterface = $resourceInterface;
     }
 
     protected function _getHelper(){
@@ -74,10 +71,6 @@ class Api {
     }
 
     private function getHeaders() {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-        $magentoVersion = $productMetadata->getVersion();;
-        $moduleVersion = $this->_resourceInterface->getDbVersion('Integrai_Core');
         $apiKey = $this->_getHelper()->getConfig('api_key');
         $secretKey = $this->_getHelper()->getConfig('secret_key');
         $token = base64_encode("{$apiKey}:{$secretKey}");
@@ -85,10 +78,7 @@ class Api {
         return array(
             "Content-Type: application/json",
             "Accept: application/json",
-            "Authorization: Basic {$token}",
-            "x-integrai-plaform: magento2",
-            "x-integrai-plaform-version: {$magentoVersion}",
-            "x-integrai-module-version: {$moduleVersion}",
+            "Authorization: Basic {$token}"
         );
     }
 

@@ -42,10 +42,18 @@ class Data
         }
 
         if ($configName) {
-            return $values[$configName] ?: $defaultValue;
+            return isset($values[$configName]) ? $values[$configName] : $defaultValue;
         }
 
         return $values;
+    }
+
+    public function updateConfig($name, $value) {
+        $config = $this->_configFactory->create()->load($name, 'name');
+        $config->setName($name)
+            ->setValues($value)
+            ->setUpdatedAt(strftime('%Y-%m-%d %H:%M:%S', time()))
+            ->save();
     }
 
     public function isEnabled() {

@@ -4,27 +4,28 @@ namespace Integrai\Core\Controller\Event;
 
 class Event extends \Magento\Framework\App\Action\Action
 {
-    protected $_pageFactory;
     protected $_resultJsonFactory;
     protected $_helper;
     protected $_api;
-    protected $_objectManager;
-    protected $_models = array();
+    protected $_connection;
+    protected $_resource;
+    protected $_processEventsFactory;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Integrai\Core\Helper\Data $helper,
         \Integrai\Core\Model\Api $api,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\App\ResourceConnection $resource,
+        \Integrai\Core\Model\ProcessEventsFactory $processEventsFactory
     )
     {
-        $this->_pageFactory = $pageFactory;
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_helper = $helper;
         $this->_api = $api;
-        $this->_objectManager = $objectManager;
+        $this->_connection = $resource->getConnection();
+        $this->_resource = $resource;
+        $this->_processEventsFactory = $processEventsFactory;
 
         return parent::__construct($context);
     }
@@ -47,57 +48,48 @@ class Event extends \Magento\Framework\App\Action\Action
                 array("batchId" => $batchId)
             );
 
-            $success = [];
-            $errors = [];
+            $this->_getHelper()->log('Total de eventos carregados: ', count($events));
 
-            $this->_getHelper()->log('Total de eventos a processar: ', count($events));
+            if (count($events) > 0) {
+                $eventIds = array_map(function ($event) {
+                    return $event['_id'];
+                }, $events);
 
-            foreach ($events as $event) {
-                $this->_getHelper()->log('Evento a processar', $event);
+                $actualEvents = $this->_processEventsFactory
+                    ->create()
+                    ->getCollection()
+                    ->addFieldToFilter(
+                        'event_id',
+                        array('in' => $eventIds)
+                    )
+                    ->load();
 
-                $eventId = $event['_id'];
-                $payload = $event['payload'];
+                $actualEventIds = array();
+                foreach ($actualEvents as $actualEvent) {
+                    $actualEventIds[] = $actualEvent->getData('event_id');
+                }
 
-                try {
-                    foreach($payload['models'] as $modelKey => $modelValue) {
-                        $modelName = $modelValue['name'];
-                        $modelRun = (bool)$modelValue['run'];
+                $data = array();
+                foreach ($events as $event) {
+                    $eventId = $event['_id'];
 
-                        if ($modelRun) {
-                            $modelArgs = $this->transformArgs($modelValue);
-                            $modelMethods = $modelValue['methods'];
-
-                            $model = call_user_func_array(array($this->_objectManager, "create"), $modelArgs);
-                            $model = $this->runMethods($model, $modelMethods);
-
-                            $this->_models[$modelName] = $model;
-                        }
+                    if (!in_array($eventId, $actualEventIds)) {
+                        $data[] = array(
+                            'event_id' => $eventId,
+                            'event' => $event['event'],
+                            'payload' => json_encode($event['payload']),
+                            'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
+                        );
                     }
+                }
 
-                    array_push($success, $eventId);
-                } catch (\Exception $e) {
-                    $this->_getHelper()->log('Erro', $e->getMessage());
-                    $this->_getHelper()->log('Erro ao processar o evento', $event);
+                $this->_getHelper()->log('Total de eventos agendado para processar: ', count($data));
 
-                    array_push($errors, array(
-                        "eventId" => $eventId,
-                        "error" => $e->getMessage()
-                    ));
+                if (count($data) > 0) {
+                    $tableName = $this->_resource->getTableName('integrai_process_events');
+                    $this->_connection->insertMultiple($tableName, $data);
                 }
             }
-
-            // Delete events with success
-            if (count($success) > 0 || count($errors) > 0) {
-                $this->_getApi()->request('/store/event', 'DELETE', array(
-                    'event_ids' => $success,
-                    'errors' => $errors
-                ));
-            }
-
-            $this->_getHelper()->log('Eventos processados: ', array(
-                'success' => $success,
-                'errors' => $errors
-            ));
 
             return $this->_resultJsonFactory->create()->setData(array(
                 'ok' => true
@@ -105,52 +97,9 @@ class Event extends \Magento\Framework\App\Action\Action
         } catch (\Exception $e) {
             $this->_getHelper()->log('Error ao processar o event', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => true,
+                'ok' => false,
                 "error" => $e->getMessage()
             ));
         }
-    }
-
-    private function runMethods($model, $modelMethods) {
-        foreach($modelMethods as $methodKey => $methodValue) {
-            $methodName = $methodValue['name'];
-            $methodRun = (bool)$methodValue['run'];
-
-            if($methodRun && $model) {
-                $methodArgs = $this->transformArgs($methodValue);
-                $model = call_user_func_array(array($model, $methodName), $methodArgs);
-            }
-        }
-
-        return $model;
-    }
-
-    private function getOtherModel($modelName) {
-        return $this->_models[$modelName];
-    }
-
-    private function transformArgs($itemValue) {
-        $newArgs = array();
-
-        $args = isset($itemValue['args']) ? $itemValue['args'] : null;
-        if(is_array($args)) {
-            $argsFormatted = array_values($args);
-
-            foreach($argsFormatted as $arg){
-                if(is_array($arg) && isset($arg['otherModelName'])) {
-                    $model = $this->getOtherModel($arg['otherModelName']);
-
-                    if (isset($arg['otherModelMethods'])) {
-                        array_push($newArgs, $this->runMethods($model, $arg['otherModelMethods']));
-                    } else {
-                        array_push($newArgs, $model);
-                    }
-                } else {
-                    array_push($newArgs, $arg);
-                }
-            }
-        }
-
-        return $newArgs;
     }
 }
