@@ -95,7 +95,7 @@ class Event extends \Magento\Framework\App\Action\Action
                 'ok' => true
             ));
         } catch (\Exception $e) {
-            $this->_getHelper()->log('Error ao processar o event', $e->getMessage());
+            $this->_getHelper()->log('Erro ao salvar os eventos', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
                 'ok' => false,
                 "error" => $e->getMessage()

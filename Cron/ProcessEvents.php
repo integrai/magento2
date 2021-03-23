@@ -43,15 +43,12 @@ class ProcessEvents
             $this->_getHelper()->log('Iniciando processamento dos eventos...');
 
             $limit = $this->_getHelper()->getConfigTable('GLOBAL', 'process_events_limit', 50);
-            $isRunning = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING');
-
-            $this->_getHelper()->log('limit', $limit);
-            $this->_getHelper()->log('isRunning', $isRunning);
+            $isRunning = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING', false);
 
             if ($isRunning === 'RUNNING') {
                 $this->_getHelper()->log('Já existe um processo rodando');
             } else {
-                $this->_getHelper()->updateConfig('PROCESS_EVENTS_RUNNING', true);
+                $this->_getHelper()->updateConfig('PROCESS_EVENTS_RUNNING', 'RUNNING');
 
                 $processEventsModel = $this->_processEventsFactory->create();
                 $events = $processEventsModel
@@ -118,8 +115,6 @@ class ProcessEvents
                     $tableName = $this->_resource->getTableName('integrai_process_events');
 
                     $eventIdsRemove = implode(', ', $eventIds);
-                    $this->_getHelper()->log('eventIdsRemove', $eventIdsRemove);
-                    $this->_getHelper()->log('where', "id in ($eventIdsRemove)");
                     $this->_connection->delete($tableName, "id in ($eventIdsRemove)");
 
                     $this->_getHelper()->log('Eventos processados: ', array(

@@ -50,7 +50,7 @@ class Health extends \Magento\Framework\App\Action\Action
             $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
             $magentoVersion = $productMetadata->getVersion();;
             $moduleVersion = $this->_resourceInterface->getDbVersion('Integrai_Core');
-            $isRunningEventProcess = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING');
+            $isRunningEventProcess = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING', false);
 
             $processEventsModel = $this->_processEventsFactory->create();
             $totalEventsToProcess = $processEventsModel
@@ -63,23 +63,26 @@ class Health extends \Magento\Framework\App\Action\Action
                 ->getSize();
 
             $data = array(
+                'phpVersion' => phpversion(),
                 'platform' => 'magento2',
                 'platformVersion' => $magentoVersion,
                 'moduleVersion' => $moduleVersion,
-                'isRunningEventProcess' => $isRunningEventProcess,
+                'isRunningEventProcess' => $isRunningEventProcess === 'RUNNING',
                 'totalEventsToProcess' => $totalEventsToProcess,
                 'totalUnsentEvent' => $totalUnsentEvent
             );
 
-//            $this->_getApi()->request(
-//                '/store/health',
-//                'POST',
-//                $data
-//            );
+            $this->_getApi()->request(
+                '/store/health',
+                'POST',
+                $data
+            );
 
             $this->_getHelper()->log('Health executado');
 
-            return $this->_resultJsonFactory->create()->setData($data);
+            return $this->_resultJsonFactory->create()->setData(array(
+                'ok' => true
+            ));
         } catch (\Exception $e) {
             $this->_getHelper()->log('Health error', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
