@@ -50,24 +50,32 @@ class AbandonedCart
                 ->load();
 
             if($quotes->count() > 0){
-                $abandonedCart = array();
                 foreach ($quotes as $quote) {
                     $customer = $this->_customer->load($quote->getCustomerId());
 
                     $data = new \Magento\Framework\DataObject();
+                    $data->setCartId($quote->getId());
                     $data->setQuote($quote->getData());
-                    $items = array_map(function($item) {
+                    $items = array_map(function($item, $quote) {
                         $newItem = new \Magento\Framework\DataObject();
                         $newItem->addData($item->getData());
+                        $newItem->setCartId($quote->getId());
                         $newItem->setProduct($item->getProduct()->getData());
                         return $newItem->getData();
-                    }, $quote->getAllItems());
+                    }, $quote->getAllItems(), $quote);
                     $data->setItems($items);
+                    $data->setQuantity(count($items));
                     $data->setCustomer($customer->getData());
-                    $abandonedCart[] = $data->getData();
-                }
+                    $data->setCreatedAt($quote->getData('created_at'));
 
-                return $this->_getApi()->sendEvent(Events::ABANDONED_CART, $abandonedCart);
+                    $this->_getApi()->sendEvent(Events::ABANDONED_CART, $data->getData());
+
+                    if ($this->_getHelper()->isEventEnabled(Events::ADD_PRODUCT_CART_ITEM)) {
+                        foreach ($items as $item) {
+                            $this->_getApi()->sendEvent(Events::ADD_PRODUCT_CART_ITEM, $item);
+                        }
+                    }
+                }
             }
         }
     }
