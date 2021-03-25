@@ -59,7 +59,7 @@ class Event extends \Magento\Framework\App\Action\Action
                     ->create()
                     ->getCollection()
                     ->addFieldToFilter(
-                        'event_id',
+                        'eventId',
                         array('in' => $eventIds)
                     )
                     ->load();

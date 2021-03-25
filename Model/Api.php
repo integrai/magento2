@@ -31,7 +31,7 @@ class Api {
         $curl_options = array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_VERBOSE => 1,
-            CURLOPT_TIMEOUT => $this->_getHelper()->getGlobalConfig('api_timeout_seconds', 2),
+            CURLOPT_TIMEOUT => $this->_getHelper()->getGlobalConfig('apiTimeoutSeconds', 2),
             CURLOPT_HTTPHEADER => $this->getHeaders(),
             CURLOPT_URL => $url,
             CURLOPT_CUSTOMREQUEST => $method
@@ -67,7 +67,7 @@ class Api {
     }
 
     private function getApiUrl() {
-        return $this->_getHelper()->getGlobalConfig('api_url');
+        return $this->_getHelper()->getGlobalConfig('apiUrl');
     }
 
     private function getHeaders() {

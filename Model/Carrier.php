@@ -114,13 +114,13 @@ class Carrier
         }
 
         return array(
-            "destination_zipcode" => $zipCode,
-            "cart_total_price" => $request->getPackageValue(),
-            "cart_total_quantity" => $request->getPackageQty(),
-            "cart_total_weight" => $request->getPackageWeight(),
-            "cart_total_height" => $request->getPackageHeight(),
-            "cart_total_width" => $request->getPackageWidth(),
-            "cart_total_length" => $request->getPackageDepth(),
+            "destinationZipCode" => $zipCode,
+            "cartTotalPrice" => $request->getPackageValue(),
+            "cartTotalQuantity" => $request->getPackageQty(),
+            "cartTotalWeight" => $request->getPackageWeight(),
+            "cartTotalHeight" => $request->getPackageHeight(),
+            "cartTotalWidth" => $request->getPackageWidth(),
+            "cartTotalLength" => $request->getPackageDepth(),
             "items" => $this->prepareItems($request->getAllItems()),
         );
     }
@@ -133,12 +133,12 @@ class Carrier
                 continue;
             }
 
-            $attribute_width   = $this->_getHelper()->getConfigTable('SHIPPING', 'attribute_width');
-            $attribute_height  = $this->_getHelper()->getConfigTable('SHIPPING', 'attribute_height');
-            $attribute_length  = $this->_getHelper()->getConfigTable('SHIPPING', 'attribute_length');
-            $width_default     = $this->_getHelper()->getConfigTable('SHIPPING', 'width_default');
-            $height_default    = $this->_getHelper()->getConfigTable('SHIPPING', 'height_default');
-            $length_default    = $this->_getHelper()->getConfigTable('SHIPPING', 'length_default');
+            $attribute_width   = $this->_getHelper()->getConfigTable('SHIPPING', 'attributeWidth');
+            $attribute_height  = $this->_getHelper()->getConfigTable('SHIPPING', 'attributeHeight');
+            $attribute_length  = $this->_getHelper()->getConfigTable('SHIPPING', 'attributeLength');
+            $width_default     = $this->_getHelper()->getConfigTable('SHIPPING', 'widthDefault');
+            $height_default    = $this->_getHelper()->getConfigTable('SHIPPING', 'heightDefault');
+            $length_default    = $this->_getHelper()->getConfigTable('SHIPPING', 'lengthDefault');
 
             /** @var \Magento\Quote\Model\Quote|Item $item */
 
@@ -153,7 +153,7 @@ class Carrier
                 "length" => (float) $length,
                 "quantity" => (int) max(1, $item->getQty()),
                 "sku" => (string) $item->getSku(),
-                "unit_price" => (float) $item->getBasePrice(),
+                "unitPrice" => (float) $item->getBasePrice(),
                 "product" => (object) $item->getProduct()->getData(),
             );
         }

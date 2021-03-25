@@ -10,6 +10,7 @@ class Events{
     const ADD_PRODUCT_CART_ITEM = 'ADD_PRODUCT_CART_ITEM';
     const ABANDONED_CART = 'ABANDONED_CART';
     const NEW_ORDER = 'NEW_ORDER';
+    const NEW_ORDER_ITEM = 'NEW_ORDER_ITEM';
     const SAVE_ORDER = 'SAVE_ORDER';
     const CANCEL_ORDER = 'CANCEL_ORDER';
     const QUOTE = 'QUOTE';

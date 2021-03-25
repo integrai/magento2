@@ -42,7 +42,7 @@ class ProcessEvents
         if ($this->_getHelper()->isEnabled()) {
             $this->_getHelper()->log('Iniciando processamento dos eventos...');
 
-            $limit = $this->_getHelper()->getConfigTable('GLOBAL', 'process_events_limit', 50);
+            $limit = $this->_getHelper()->getConfigTable('GLOBAL', 'processEventsLimit', 50);
             $isRunning = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING', false);
 
             if ($isRunning === 'RUNNING') {
@@ -108,7 +108,7 @@ class ProcessEvents
                 // Delete events
                 if (count($success) > 0 || count($errors) > 0) {
                     $this->_getApi()->request('/store/event', 'DELETE', array(
-                        'event_ids' => $success,
+                        'eventIds' => $success,
                         'errors' => $errors
                     ));
 

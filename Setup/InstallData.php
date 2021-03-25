@@ -21,9 +21,9 @@ class InstallData implements InstallDataInterface
                 'name' => 'GLOBAL',
                 'values' => '{
                   "minutes_abandoned_cart_lifetime": 60,
-                  "api_url": "https://api.integrai.com.br",
-                  "api_timeout_seconds": 15,
-                  "process_events_limit": 50
+                  "apiUrl": "https://api.integrai.com.br",
+                  "apiTimeoutSeconds": 15,
+                  "processEventsLimit": 50
                 }',
                 'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
                 'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
@@ -31,12 +31,12 @@ class InstallData implements InstallDataInterface
             array(
                 'name' => 'SHIPPING',
                 'values' => '{
-                  "attribute_width": "ts_dimensions_width",
-                  "attribute_height": "ts_dimensions_height",
-                  "attribute_length": "ts_dimensions_length",
-                  "width_default": 11,
-                  "height_default": 2,
-                  "length_default": 16
+                  "attributeWidth": "ts_dimensions_width",
+                  "attributeHeight": "ts_dimensions_height",
+                  "attributeLength": "ts_dimensions_length",
+                  "widthDefault": 11,
+                  "heightDefault": 2,
+                  "lengthDefault": 16
                 }',
                 'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
                 'updated_at' => strftime('%Y-%m-%d %H:%M:%S', time()),

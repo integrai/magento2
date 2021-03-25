@@ -45,12 +45,12 @@ class Boleto extends \Magento\Framework\App\Action\Action
             }
 
             $response_boleto = $this->_getApi()->request('/store/boleto', 'GET', null, array(
-                'order_id' => $order_id,
-                'is_duplicate' => $is_duplicate
+                'orderId' => $order_id,
+                'isDuplicate' => $is_duplicate
             ));
 
             return $this->_resultJsonFactory->create()->setData(array(
-                'boleto_url' => $response_boleto['boleto_url']
+                'boleto_url' => $response_boleto['boletoUrl']
             ));
         } catch (\Exception $e) {
             $this->_getHelper()->log('Error ao buscar boleto', $e->getMessage());

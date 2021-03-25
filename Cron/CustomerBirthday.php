@@ -40,7 +40,9 @@ class CustomerBirthday
                 ->addAttributeToFilter('dob', array('like' => '%'.date("m").'-'.date("d")))
                 ->load();
 
-            return $this->_getApi()->sendEvent(Events::CUSTOMER_BIRTHDAY, $customers->getData());
+            foreach ($customers as $customer) {
+                $this->_getApi()->sendEvent(Events::CUSTOMER_BIRTHDAY, $customer->getData());
+            }
         }
     }
 }
