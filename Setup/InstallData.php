@@ -20,7 +20,7 @@ class InstallData implements InstallDataInterface
             array(
                 'name' => 'GLOBAL',
                 'values' => '{
-                  "minutes_abandoned_cart_lifetime": 60,
+                  "minutesAbandonedCartLifetime": 60,
                   "apiUrl": "https://api.integrai.com.br",
                   "apiTimeoutSeconds": 15,
                   "processEventsLimit": 50
