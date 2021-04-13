@@ -1,0 +1,29 @@
+<?php
+/**
+ * @var Integrai\Core\Block\Adminhtml\Order\View\Custom $block
+ */
+
+if($block->getDangerAlert()):
+?>
+
+<div class="custom-alert">
+    <strong>ATENÇÃO: </strong>
+    <?php echo $block->getDangerAlert(); ?>
+</div>
+<style>
+    .custom-alert{
+        width: 100%;
+        margin: 20px auto;
+        padding: 30px;
+        border-radius: 5px;
+        box-shadow: 0 0 15px 5px #ccc;
+        background-color: #f7a7a3;
+        border-left: 5px solid;
+        font-size: 16px;
+    }
+
+    .custom-alert a{
+        color: white!important;
+    }
+</style>
+<?php endif; ?>
