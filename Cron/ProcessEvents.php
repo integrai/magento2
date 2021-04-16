@@ -66,8 +66,6 @@ class ProcessEvents
                 foreach ($events as $event) {
                     $eventIds[] = $event->getData('id');
 
-                    $this->_getHelper()->log('Evento a processar', $event);
-
                     $eventId = $event->getData('event_id');
                     $payload = json_decode($event->getData('payload'), true);
 
@@ -132,10 +130,19 @@ class ProcessEvents
         foreach($modelMethods as $methodKey => $methodValue) {
             $methodName = $methodValue['name'];
             $methodRun = (bool)$methodValue['run'];
+            $methodCheckReturnType = $methodValue['checkReturnType'];
 
             if($methodRun && $model) {
                 $methodArgs = $this->transformArgs($methodValue);
                 $model = call_user_func_array(array($model, $methodName), $methodArgs);
+
+                if ($methodCheckReturnType) {
+                    $types = (array) $methodCheckReturnType['types'];
+                    $errorMessage = $methodCheckReturnType['errorMessage'];
+                    if (!in_array(gettype($model), $types)) {
+                        throw new \Exception($errorMessage);
+                    }
+                }
             }
         }
 
@@ -156,7 +163,6 @@ class ProcessEvents
             foreach($argsFormatted as $arg){
                 if(is_array($arg) && isset($arg['otherModelName'])) {
                     $model = $this->getOtherModel($arg['otherModelName']);
-
                     if (isset($arg['otherModelMethods'])) {
                         array_push($newArgs, $this->runMethods($model, $arg['otherModelMethods']));
                     } else {
