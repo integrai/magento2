@@ -4,12 +4,14 @@ namespace Integrai\Core\Controller\Payment;
 
 class Boleto extends \Magento\Framework\App\Action\Action
 {
+    protected $_request;
     protected $_pageFactory;
     protected $_resultJsonFactory;
     protected $_helper;
     protected $_api;
 
     public function __construct(
+        \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -17,6 +19,7 @@ class Boleto extends \Magento\Framework\App\Action\Action
         \Integrai\Core\Model\Api $api
     )
     {
+        $this->_request = $request;
         $this->_pageFactory = $pageFactory;
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_helper = $helper;
@@ -35,8 +38,8 @@ class Boleto extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         try{
-            $order_id = trim($_GET['order_id']);
-            $is_duplicate = isset($_GET['is_duplicate']);
+            $order_id = trim($this->_request->getParam('order_id'));
+            $is_duplicate = (bool) $this->_request->getParam('is_duplicate');
 
             $this->_getHelper()->log('Buscando url do boleto do pedido: ', $order_id);
 

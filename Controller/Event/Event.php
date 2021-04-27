@@ -4,6 +4,7 @@ namespace Integrai\Core\Controller\Event;
 
 class Event extends \Magento\Framework\App\Action\Action
 {
+    protected $_request;
     protected $_resultJsonFactory;
     protected $_helper;
     protected $_api;
@@ -12,6 +13,7 @@ class Event extends \Magento\Framework\App\Action\Action
     protected $_processEventsFactory;
 
     public function __construct(
+        \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Integrai\Core\Helper\Data $helper,
@@ -20,6 +22,7 @@ class Event extends \Magento\Framework\App\Action\Action
         \Integrai\Core\Model\ProcessEventsFactory $processEventsFactory
     )
     {
+        $this->_request = $request;
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_helper = $helper;
         $this->_api = $api;
@@ -40,7 +43,8 @@ class Event extends \Magento\Framework\App\Action\Action
 
     public function execute() {
         try{
-            $batchId = isset($_GET['batchId']) ? trim($_GET['batchId']) : "";
+            $batchIdParam = $this->_request->getParam('batchId');
+            $batchId = isset($batchIdParam) ? trim($batchIdParam) : "";
             $events = $this->_getApi()->request(
                 '/store/event',
                 'GET',
