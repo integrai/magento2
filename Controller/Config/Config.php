@@ -8,6 +8,8 @@ class Config extends \Magento\Framework\App\Action\Action
     protected $_helper;
     protected $_api;
     protected $_configFactory;
+    protected $_cacheTypeList;
+    protected $_cacheFrontendPool;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -15,7 +17,9 @@ class Config extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Integrai\Core\Helper\Data $helper,
         \Integrai\Core\Model\Api $api,
-        \Integrai\Core\Model\ConfigFactory $configFactory
+        \Integrai\Core\Model\ConfigFactory $configFactory,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
     )
     {
         $this->_pageFactory = $pageFactory;
@@ -23,6 +27,8 @@ class Config extends \Magento\Framework\App\Action\Action
         $this->_helper = $helper;
         $this->_api = $api;
         $this->_configFactory = $configFactory;
+        $this->_cacheTypeList = $cacheTypeList;
+        $this->_cacheFrontendPool = $cacheFrontendPool;
         return parent::__construct($context);
     }
 
@@ -54,6 +60,15 @@ class Config extends \Magento\Framework\App\Action\Action
                         ->setUpdatedAt(strftime('%Y-%m-%d %H:%M:%S', time()))
                         ->save();
                 }
+            }
+
+
+            $types = array('config','layout','block_html');
+            foreach ($types as $type) {
+                $this->_cacheTypeList->cleanType($type);
+            }
+            foreach ($this->_cacheFrontendPool as $cacheFrontend) {
+                $cacheFrontend->getBackend()->clean();
             }
 
             $this->_getHelper()->log('Configurações atualizadas com sucesso!');
