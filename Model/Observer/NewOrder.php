@@ -59,6 +59,8 @@ class NewOrder implements ObserverInterface{
                 }
             }
 
+            $order->setTotalItems(count($items));
+
             $payment = $order->getPayment()->getData();
 
             $additional_information = $payment['additional_information'];
