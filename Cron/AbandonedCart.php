@@ -72,6 +72,9 @@ class AbandonedCart
 
                     if ($this->_getHelper()->isEventEnabled(Events::ADD_PRODUCT_CART_ITEM)) {
                         foreach ($items as $item) {
+                            $item->setCartId($quote->getId());
+                            $item->setCustomer($customer->getData());
+
                             $this->_getApi()->sendEvent(Events::ADD_PRODUCT_CART_ITEM, $item);
                         }
                     }
