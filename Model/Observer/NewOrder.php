@@ -59,6 +59,8 @@ class NewOrder implements ObserverInterface{
                 }
             }
 
+            $order->setTotalItems(count($items));
+
             $payment = $order->getPayment()->getData();
 
             $additional_information = $payment['additional_information'];
@@ -83,6 +85,9 @@ class NewOrder implements ObserverInterface{
 
             if ($this->_getHelper()->isEventEnabled(Events::NEW_ORDER_ITEM)) {
                 foreach ($items as $item) {
+                    $item['order_id'] = $order->getIncrementId();
+                    $item['customer'] = $customer;
+
                     $this->_getApi()->sendEvent(Events::NEW_ORDER_ITEM, $item);
                 }
             }
