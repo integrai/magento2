@@ -2,7 +2,10 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="content">
-            <block class="Integrai\Core\Block\Adminhtml\Order\View\Custom" name="sales_order_view_custom" template="order/view/custom.phtml" before="sales_order_edit" />
+            <block class="Integrai\Core\Block\Adminhtml\Order\View\Alert" name="sales_order_view_alert" template="order/view/alert.phtml" before="sales_order_edit" />
+        </referenceBlock>
+        <referenceBlock name="payment_additional_info">
+            <block class="Integrai\Core\Block\Adminhtml\Order\View\PaymentInfo" name="sales_order_view_payment_info" template="order/view/paymentInfo.phtml" />
         </referenceBlock>
     </body>
 </page>

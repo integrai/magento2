@@ -43,7 +43,7 @@ class ProcessEvents
             $this->_getHelper()->log('Iniciando processamento dos eventos...');
 
             $limit = $this->_getHelper()->getConfigTable('GLOBAL', 'processEventsLimit', 50);
-            $isRunning = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'RUNNING', false);
+            $isRunning = $this->_getHelper()->getConfigTable('PROCESS_EVENTS_RUNNING', null, 'NOT_RUNNING', false);
 
             if ($isRunning === 'RUNNING') {
                 $this->_getHelper()->log('Já existe um processo rodando');
@@ -90,7 +90,7 @@ class ProcessEvents
                         }
 
                         array_push($success, $eventId);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         $this->_getHelper()->log('Erro', $e->getMessage());
                         $this->_getHelper()->log('Erro ao processar o evento', $event);
 
@@ -130,7 +130,7 @@ class ProcessEvents
         foreach($modelMethods as $methodKey => $methodValue) {
             $methodName = $methodValue['name'];
             $methodRun = (bool)$methodValue['run'];
-            $methodCheckReturnType = $methodValue['checkReturnType'];
+            $methodCheckReturnType = isset($methodValue['checkReturnType']) ? $methodValue['checkReturnType'] : null;
 
             if($methodRun && $model) {
                 $methodArgs = $this->transformArgs($methodValue);
