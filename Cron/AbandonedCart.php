@@ -88,8 +88,8 @@ class AbandonedCart
                   }
               }
           }
-        } catch (\Exception $e) {
-          $this->_getHelper()->log('==> ABANDONED_CART Error', $e->getMessage());
+        } catch (\Throwable $e) {
+          $this->_getHelper()->log('ABANDONED_CART Error', $e->getMessage());
         }
     }
 }
