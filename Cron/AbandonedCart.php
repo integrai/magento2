@@ -63,13 +63,15 @@ class AbandonedCart
                       $data->setQuote($quote->getData());
 
                       $items = array();
-                      foreach ($quote->getAllItems() as $item) {
-                        $newItem = new \Magento\Framework\DataObject();
-                        $newItem->addData($item->getData());
-                        $newItem->setCartId($quote->getId());
-                        $newItem->setProduct($item->getProduct()->getData());
+                      foreach ($quote->getAllVisibleItems() as $item) {
+                          if (!$item->getHasChildren()) {
+                              $newItem = new \Magento\Framework\DataObject();
+                              $newItem->addData($item->getData());
+                              $newItem->setCartId($quote->getId());
+                              $newItem->setProduct($item->getProduct()->getData());
 
-                        $items[] = $newItem->getData();
+                              $items[] = $newItem->getData();
+                          }
                       }
 
                       $data->setItems($items);
