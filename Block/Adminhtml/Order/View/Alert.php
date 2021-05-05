@@ -2,7 +2,7 @@
 
 namespace Integrai\Core\Block\Adminhtml\Order\View;
 
-class Custom extends \Magento\Backend\Block\Template
+class Alert extends \Magento\Backend\Block\Template
 {
     protected $_helper;
 
