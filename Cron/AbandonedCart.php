@@ -43,13 +43,15 @@ class AbandonedCart
               $minutes = $this->_getHelper()->getGlobalConfig('minutesAbandonedCartLifetime', 60);
               $fromDate = date('Y-m-d H:i:s', strtotime('-'.$minutes. ' minutes'));
               $toDate = date('Y-m-d H:i:s', strtotime("now"));
+
               $quotes = $this->_quoteFactory
                   ->create()
                   ->getCollection()
                   ->addFieldToFilter('is_active', 1)
                   ->addFieldToFilter('items_count', array('gt' => 0))
                   ->addFieldToFilter('customer_email', array('notnull' => true))
-                  ->addFieldToFilter('created_at', ['lteq' => $fromDate, 'gteq' => $toDate])
+                  ->addFieldToFilter('updated_at', ['lteq' => $toDate])
+                  ->addFieldToFilter('updated_at', ['gteq' => $fromDate])
                   ->load();
 
               if ($quotes->count() > 0) {
