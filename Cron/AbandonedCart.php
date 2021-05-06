@@ -36,6 +36,33 @@ class AbandonedCart
         return $this->_api;
     }
 
+    protected function _getQuoteData($item, $quote)
+    {
+      $newItem = new \Magento\Framework\DataObject();
+      $newItem->addData($item->getData());
+      $newItem->setCartId($quote->getId());
+      $newItem->setProduct($item->getProduct()->getData());
+
+      return $newItem;
+    }
+
+    protected function _getItems($quote)
+    {
+      $items = array();
+
+      foreach ($quote->getAllVisibleItems() as $item) {
+        if ($item->getHasChildren()) {
+          foreach ($item->getChildren() as $child) {
+            $items[] = $this->_getQuoteData($child, $quote);
+          }
+        } else {
+          $items[] = $this->_getQuoteData($item, $quote);
+        }
+      }
+
+      return $items;
+    }
+
     public function execute()
     {
         try {
@@ -57,23 +84,11 @@ class AbandonedCart
               if ($quotes->count() > 0) {
                   foreach ($quotes as $quote) {
                       $customer = $this->_customer->load($quote->getCustomerId());
+                      $items = $this->_getItems($quote);
 
                       $data = new \Magento\Framework\DataObject();
                       $data->setCartId($quote->getId());
                       $data->setQuote($quote->getData());
-
-                      $items = array();
-                      foreach ($quote->getAllVisibleItems() as $item) {
-                          if (!$item->getHasChildren()) {
-                              $newItem = new \Magento\Framework\DataObject();
-                              $newItem->addData($item->getData());
-                              $newItem->setCartId($quote->getId());
-                              $newItem->setProduct($item->getProduct()->getData());
-
-                              $items[] = $newItem->getData();
-                          }
-                      }
-
                       $data->setItems($items);
                       $data->setQuantity(count($items));
                       $data->setCustomer($customer->getData());
@@ -84,7 +99,7 @@ class AbandonedCart
                       if ($this->_getHelper()->isEventEnabled(Events::ABANDONED_CART_ITEM)) {
                           foreach ($items as $item) {
                               $item['customer'] = $customer->getData();
-                              $this->_getApi()->sendEvent(Events::ABANDONED_CART_ITEM, $item);
+                              $this->_getApi()->sendEvent(Events::ABANDONED_CART_ITEM, $item->getData());
                           }
                       }
                   }
