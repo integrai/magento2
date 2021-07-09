@@ -9,9 +9,34 @@ class Boleto extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_canCapture              = true;
     protected $_canUseForMultishipping  = true;
 
-    public function isAvailable($quote = null)
+    private $_helper;
+
+    const NEW_ORDER = 'NEW_ORDER';
+
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Integrai\Core\Helper\Data $helper
+    )
     {
-        return true;
+        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, null, null, []);
+        $this->_helper = $helper;
+    }
+
+    protected function _getHelper(){
+        return $this->_helper;
+    }
+
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $formOptions = $this->_getHelper()->getConfigTable('PAYMENT_BOLETO', 'formOptions', array());
+        $gateways = isset($formOptions) && is_array($formOptions) ? $formOptions['gateways'] : array();
+        return $this->_getHelper()->isEventEnabled(self::NEW_ORDER) && count($gateways) > 0;
     }
 
     public function assignData(\Magento\Framework\DataObject $data)
