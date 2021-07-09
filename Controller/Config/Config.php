@@ -76,7 +76,7 @@ class Config extends \Magento\Framework\App\Action\Action
             return $this->_resultJsonFactory->create()->setData(array(
                 "ok" => true,
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->_getHelper()->log('Error ao atualizar configs', $e->getMessage());
             $this->_redirect("/");
         }

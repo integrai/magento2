@@ -90,7 +90,7 @@ class Api {
             ));
             $this->_getHelper()->log($eventName, 'Enviado com sucesso');
             return $response;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if(!$resend) {
                 $this->_backupEvent($eventName, $payload);
             } else {
