@@ -98,7 +98,7 @@ class AbandonedCart
 
                       if ($this->_getHelper()->isEventEnabled(Events::ABANDONED_CART_ITEM)) {
                           foreach ($items as $item) {
-                              $item['customer'] = $customer->getData();
+                              $item->setCustomer($customer->getData());
                               $this->_getApi()->sendEvent(Events::ABANDONED_CART_ITEM, $item->getData());
                           }
                       }
