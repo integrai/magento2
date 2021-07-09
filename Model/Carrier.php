@@ -91,7 +91,7 @@ class Carrier
                     $result->append($this->transformRate($service));
                 }
                 return $result;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $error = $this->_errorFactory->create();
                 $data  = [
                     'carrier'       => $this->_code,

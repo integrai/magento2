@@ -43,7 +43,7 @@ class ResendEvents
                 try{
                     $this->_getApi()->sendEvent($eventName, $payload, true);
                     $event->delete();
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $this->_getHelper()->log("Error ao reenviar o evento: ", $e->getMessage());
                 }
             }

@@ -98,7 +98,7 @@ class Event extends \Magento\Framework\App\Action\Action
             return $this->_resultJsonFactory->create()->setData(array(
                 'ok' => true
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->_getHelper()->log('Erro ao salvar os eventos', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
                 'ok' => false,

@@ -53,7 +53,7 @@ class Boleto extends \Magento\Framework\App\Action\Action
             ));
 
             return $this->_resultJsonFactory->create()->setData($response);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->_getHelper()->log('Error ao buscar boleto', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
                 "boletoUrl" => null,
