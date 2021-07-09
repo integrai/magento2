@@ -2,7 +2,7 @@
 
 namespace Integrai\Core\Controller\Payment;
 
-class Boleto extends \Magento\Framework\App\Action\Action
+class Pix extends \Magento\Framework\App\Action\Action
 {
     protected $_request;
     protected $_pageFactory;
@@ -39,24 +39,23 @@ class Boleto extends \Magento\Framework\App\Action\Action
     {
         try{
             $order_id = trim($this->_request->getParam('order_id'));
-            $is_duplicate = (bool) $this->_request->getParam('is_duplicate');
 
-            $this->_getHelper()->log('Buscando url do boleto do pedido: ', $order_id);
+            $this->_getHelper()->log('Buscando url do pix do pedido: ', $order_id);
 
             if (!$order_id) {
                 throw new \Exception('Informe o ID do pedido');
             }
 
-            $response = $this->_getApi()->request('/store/boleto', 'GET', null, array(
+            $response = $this->_getApi()->request('/store/pix', 'GET', null, array(
                 'orderId' => $order_id,
-                'isDuplicate' => $is_duplicate
             ));
 
             return $this->_resultJsonFactory->create()->setData($response);
         } catch (\Exception $e) {
-            $this->_getHelper()->log('Error ao buscar boleto', $e->getMessage());
+            $this->_getHelper()->log('Error ao buscar pix', $e->getMessage());
             return $this->_resultJsonFactory->create()->setData(array(
-                "boletoUrl" => null,
+                "qrCode" => null,
+                "qrCodeBase64" => null,
                 "error" => $e->getMessage(),
             ));
         }

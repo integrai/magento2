@@ -19,6 +19,12 @@
     </carriers>
 
     <payment>
+      <integrai_pix>
+        <active>1</active>
+        <model>Integrai\Core\Model\Payment\Pix</model>
+        <title>Pix</title>
+        <order_status>pending_payment</order_status>
+      </integrai_pix>
       <integrai_boleto>
         <active>1</active>
         <model>Integrai\Core\Model\Payment\Boleto</model>

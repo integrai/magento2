@@ -57,6 +57,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
         }
 
         return [
+            'integrai_pix' => $this->_getHelper()->getConfigTable('PAYMENT_PIX'),
             'integrai_boleto' => $this->_getHelper()->getConfigTable('PAYMENT_BOLETO'),
             'integrai_creditcard' => $this->_getHelper()->getConfigTable('PAYMENT_CREDITCARD'),
             'integrai_amount' => (float)$quote->getBaseGrandTotal(),
