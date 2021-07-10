@@ -15,19 +15,21 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
     protected $_customerSession;
 
     protected $_regionFactory;
-    protected $_addressFactory;
+    protected $_urlBuilder;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Customer\Model\Session $customerSession,
-        \Magento\Directory\Model\RegionFactory $regionFactory
+        \Magento\Directory\Model\RegionFactory $regionFactory,
+        \Magento\Framework\UrlInterface $urlBuilder
     )
     {
         $this->_helper = $helper;
         $this->_checkoutSession = $checkoutSession;
         $this->_customerSession = $customerSession;
         $this->_regionFactory = $regionFactory;
+        $this->$urlBuilder = $urlBuilder;
     }
 
     protected function _getHelper(){
@@ -57,6 +59,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
         }
 
         return [
+            'integrai_success_url' => $this->_urlBuilder->getUrl('integrai/payment/success', ['_secure' => true]),
             'integrai_boleto' => $this->_getHelper()->getConfigTable('PAYMENT_BOLETO'),
             'integrai_creditcard' => $this->_getHelper()->getConfigTable('PAYMENT_CREDITCARD'),
             'integrai_amount' => (float)$quote->getBaseGrandTotal(),
