@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<body>
-    <referenceBlock name="page.main.title" remove="true" />
-    <referenceContainer name="content">
-        <block class="Integrai\Core\Block\PageSuccess" name="order.details.success" template="Integrai_Core::order/success.phtml" after="-">
-        </block>
-    </referenceContainer>
-    <referenceBlock name="checkout.success" remove="true"/>
-</body>

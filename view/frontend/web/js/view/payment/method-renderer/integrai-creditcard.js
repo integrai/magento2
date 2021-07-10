@@ -10,7 +10,8 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Integrai_Core/payment/integrai-creditcard'
+                template: 'Integrai_Core/payment/integrai-creditcard',
+                redirectAfterPlaceOrder: false,
             },
 
             getCode: function() {
@@ -85,7 +86,11 @@ define(
                     scriptElm.src = script;
                     document.head.appendChild(scriptElm);
                 });
-            }
+            },
+
+            afterPlaceOrder: function () {
+                window.location = window.checkoutConfig.integrai_success_url;
+            },
         });
     }
 );
