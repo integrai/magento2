@@ -29,7 +29,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
         $this->_checkoutSession = $checkoutSession;
         $this->_customerSession = $customerSession;
         $this->_regionFactory = $regionFactory;
-        $this->$urlBuilder = $urlBuilder;
+        $this->_urlBuilder = $urlBuilder;
     }
 
     protected function _getHelper(){
