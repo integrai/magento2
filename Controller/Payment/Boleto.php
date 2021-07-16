@@ -47,17 +47,17 @@ class Boleto extends \Magento\Framework\App\Action\Action
                 throw new \Exception('Informe o ID do pedido');
             }
 
-            $response_boleto = $this->_getApi()->request('/store/boleto', 'GET', null, array(
+            $response = $this->_getApi()->request('/store/boleto', 'GET', null, array(
                 'orderId' => $order_id,
                 'isDuplicate' => $is_duplicate
             ));
 
-            return $this->_resultJsonFactory->create()->setData(array(
-                'boleto_url' => $response_boleto['boletoUrl']
-            ));
+            return $this->_resultJsonFactory->create()->setData($response);
         } catch (\Throwable $e) {
-            $this->_getHelper()->log('Error ao buscar boleto', $e->getMessage());
-            $this->_redirect("/");
+            return $this->_resultJsonFactory->create()->setData(array(
+                "boletoUrl" => null,
+                "error" => $e->getMessage(),
+            ));
         }
     }
 }
