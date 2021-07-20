@@ -3,6 +3,7 @@
 namespace Integrai\Core\Model\Observer;
 
 use Integrai\Core\Model\Observer\Events;
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Event\ObserverInterface;
 
 class NewOrder implements ObserverInterface{
@@ -10,18 +11,21 @@ class NewOrder implements ObserverInterface{
     private $_api;
     private $_customer;
     private $_checkoutSession;
+    private $_objectManager;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
         \Integrai\Core\Model\Api $api,
         \Magento\Customer\Model\Customer $customer,
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\ObjectManagerInterface $objectManager
     )
     {
         $this->_helper = $helper;
         $this->_api = $api;
         $this->_customer = $customer;
         $this->_checkoutSession = $checkoutSession;
+        $this->_objectManager = $objectManager;
     }
 
     protected function _getHelper(){
@@ -55,6 +59,14 @@ class NewOrder implements ObserverInterface{
             $items = array();
             foreach ($order->getAllVisibleItems() as $item) {
                 if (!$item->getHasChildren()) {
+                    $categoryIds = $item->getProduct()->getCategoryIds();
+                    $item['categories'] = array();
+
+                    foreach($categoryIds as $index => $categoryId){
+                      $category = $this->_objectManager->create('Magento\Catalog\Model\Category')->load($categoryId);
+                      $item['categories'] += array($category->getData());
+                    }
+
                     $items[] = $item->getData();
                 }
             }
