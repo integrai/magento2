@@ -60,12 +60,16 @@ class NewOrder implements ObserverInterface{
             foreach ($order->getAllVisibleItems() as $item) {
                 if (!$item->getHasChildren()) {
                     $categoryIds = $item->getProduct()->getCategoryIds();
-                    $item['categories'] = array();
+                    $categories = array();
 
                     foreach($categoryIds as $index => $categoryId){
                       $category = $this->_objectManager->create('Magento\Catalog\Model\Category')->load($categoryId);
-                      $item['categories'] += array($category->getData());
+                      $categories += array($category->getName());
                     }
+
+                    $item['categories'] = !empty($categories) && is_array($categories)
+                      ? implode(', ', $categories)
+                      : '';
 
                     $items[] = $item->getData();
                 }
