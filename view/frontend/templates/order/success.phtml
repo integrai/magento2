@@ -17,6 +17,11 @@ $order = json_encode(array(
             'order_id' => $order->getIncrementId()
         )
     )),
+    "pix_url" => $block->getUrl('integrai/payment/pix', array(
+        '_query' => array(
+            'order_id' => $order->getIncrementId()
+        )
+    )),
 ));
 
 $pageSuccess = json_encode($block->getIntegraiConfigs());
