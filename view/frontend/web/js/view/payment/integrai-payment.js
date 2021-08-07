@@ -12,6 +12,10 @@ define(
         'use strict';
         rendererList.push(
             {
+                type: 'integrai_pix',
+                component: 'Integrai_Core/js/view/payment/method-renderer/integrai-pix'
+            },
+            {
                 type: 'integrai_boleto',
                 component: 'Integrai_Core/js/view/payment/method-renderer/integrai-boleto'
             },

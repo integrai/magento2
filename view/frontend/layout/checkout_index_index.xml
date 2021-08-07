@@ -21,6 +21,9 @@
                                                                 <item name="integrai_core-payments" xsi:type="array">
                                                                     <item name="component" xsi:type="string">Integrai_Core/js/view/payment/integrai-payment</item>
                                                                     <item name="methods" xsi:type="array">
+                                                                        <item name="integrai_pix" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
                                                                         <item name="integrai_boleto" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
