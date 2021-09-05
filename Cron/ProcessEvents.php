@@ -10,6 +10,7 @@ class ProcessEvents
     private $_objectManager;
     private $_connection;
     private $_resource;
+    private $_indexerFactory;
     private $_models = array();
 
     public function __construct(
@@ -17,7 +18,8 @@ class ProcessEvents
         \Integrai\Core\Model\Api $api,
         \Integrai\Core\Model\ProcessEventsFactory $processEventsFactory,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\App\ResourceConnection $resource
+        \Magento\Framework\App\ResourceConnection $resource,
+        \Magento\Indexer\Model\IndexerFactory $indexerFactory
     )
     {
         $this->_helper = $helper;
@@ -26,6 +28,7 @@ class ProcessEvents
         $this->_objectManager = $objectManager;
         $this->_connection = $resource->getConnection();
         $this->_resource = $resource;
+        $this->_indexerFactory = $indexerFactory;
     }
 
     protected function _getHelper(){
@@ -51,7 +54,10 @@ class ProcessEvents
             $interval = $dateDiff->format('%h');
 
             if ($isRunning === 'RUNNING' && $lastRunning && $interval < $timeout) {
-                $this->_getHelper()->log('Já existe um processo rodando');
+                $this->_getHelper()->log('Já existe um processo rodando', array(
+                    'isRunning' => $isRunning,
+                    'lastRunning' => $lastRunning,
+                ));
             } else {
                 $this->_getHelper()->updateConfig('PROCESS_EVENTS_RUNNING', 'RUNNING');
                 $this->_getHelper()->updateConfig('LAST_PROCESS_EVENTS_RUN', $now);
@@ -69,11 +75,16 @@ class ProcessEvents
                 $errors = [];
                 $eventIds = [];
 
+                $hasProductEvent = false;
+
                 foreach ($events as $event) {
                     $eventIds[] = $event->getData('id');
 
                     $eventId = $event->getData('event_id');
+                    $eventName = $event->getData('event');
                     $payload = json_decode($event->getData('payload'), true);
+
+                    $hasProductEvent = str_contains($eventName, 'PRODUCT');
 
                     try {
                         if(!isset($payload) || !isset($payload['models']) || !is_array($payload['models'])) {
@@ -105,6 +116,26 @@ class ProcessEvents
                                 "eventId" => $eventId,
                                 "error" => $e->getMessage()
                             ));
+                        }
+                    }
+                }
+
+                // Reindex
+                if ($hasProductEvent) {
+                    $indexerIds = array(
+                        'catalog_product_price',
+                        'cataloginventory_stock',
+                    );
+
+                    foreach ($indexerIds as $indexerId) {
+                        $this->_getHelper()->log('indexerId ', $indexerId);
+
+                        try{
+                            $indexer = $this->_indexerFactory->create();
+                            $indexer->load($indexerId);
+                            $indexer->reindexAll();
+                        } catch (\Throwable $e) {
+                            $this->_getHelper()->log('Error reindex', $e->getMessage());
                         }
                     }
                 }
