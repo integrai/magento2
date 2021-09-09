@@ -29,4 +29,9 @@
     <event name="order_cancel_after">
         <observer name="integrai_cancel_order" instance="Integrai\Core\Model\Observer\CancelOrder" />
     </event>
+
+    <!-- criar ou edita produto -->
+    <event name="catalog_product_save_after">
+        <observer name="integrai_product" instance="Integrai\Core\Model\Observer\CreateOrEditProduct" />
+    </event>
 </config>
