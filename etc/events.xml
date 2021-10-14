@@ -34,4 +34,9 @@
     <event name="catalog_product_save_after">
         <observer name="integrai_product" instance="Integrai\Core\Model\Observer\CreateOrEditProduct" />
     </event>
+
+    <!-- deletar produto -->
+    <event name="catalog_product_delete_after">
+        <observer name="integrai_delete_product" instance="Integrai\Core\Model\Observer\DeleteProduct" />
+    </event>
 </config>
