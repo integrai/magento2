@@ -45,8 +45,6 @@ class CreateOrEditProduct implements ObserverInterface{
             $data['photos'] = $this->getProductPhotos($product);
             $data['categories'] = $this->getProductCategories($product);
 
-            $this->_getHelper()->log('product', $data);
-
             if ($product->getTypeId() == 'configurable') {
                 $variations = $product->getTypeInstance()->getUsedProducts($product);
 
