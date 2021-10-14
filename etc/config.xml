@@ -37,6 +37,12 @@
         <title>Cartão de Crédito</title>
         <order_status>pending_payment</order_status>
       </integrai_creditcard>
+      <integrai_marketplace>
+        <active>1</active>
+        <model>Integrai\Core\Model\Payment\MarketPlace</model>
+        <title>Marketplace</title>
+        <order_status>pending_payment</order_status>
+      </integrai_marketplace>
     </payment>
   </default>
 </config>
