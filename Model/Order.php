@@ -114,6 +114,7 @@ class Order {
         $order->getPayment()->setAdditionalInformation(array(
             "payment_response" => array(
                 "module_name" => $orderData['order']['marketplace'],
+                "marketplace_id" => $orderData['order']['id'],
             )
         ));
         $order->save();
