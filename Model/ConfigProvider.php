@@ -16,13 +16,15 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
 
     protected $_regionFactory;
     protected $_urlBuilder;
+    protected $_country;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Directory\Model\RegionFactory $regionFactory,
-        \Magento\Framework\UrlInterface $urlBuilder
+        \Magento\Framework\UrlInterface $urlBuilder,
+        \Magento\Directory\Model\Country $country
     )
     {
         $this->_helper = $helper;
@@ -30,6 +32,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
         $this->_customerSession = $customerSession;
         $this->_regionFactory = $regionFactory;
         $this->_urlBuilder = $urlBuilder;
+        $this->_country = $country;
     }
 
     protected function _getHelper(){
@@ -41,6 +44,11 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
         $billing_address = $quote->getBillingAddress()->getData();
         $street = $quote->getBillingAddress()->getStreet();
         $regionCode = $this->_regionFactory->create()->load($billing_address['region_id'])->getCode();
+
+        $regions = array();
+        foreach ($this->_country->loadByCode('BR')->getRegions() as $region) {
+            array_push($regions, $region->getData());
+        }
 
         $customerSession = $this->_customerSession->getCustomer();
 
@@ -72,6 +80,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
                 "addressState" => $regionCode,
                 "addressZipCode" => $billing_address['postcode'],
             )),
+            'integrai_regions' => $regions
         ];
     }
 }

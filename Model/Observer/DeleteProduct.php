@@ -34,8 +34,6 @@ class DeleteProduct implements ObserverInterface{
     public function execute(\Magento\Framework\Event\Observer $observer) {
         $product = $observer->getEvent()->getProduct();
 
-        $this->_getHelper()->log('product', $product->getData());
-
         if ($this->_getHelper()->isEventEnabled(Events::DELETE_PRODUCT)) {
             return $this->_getApi()->sendEvent(Events::DELETE_PRODUCT, $product->getData());
         }

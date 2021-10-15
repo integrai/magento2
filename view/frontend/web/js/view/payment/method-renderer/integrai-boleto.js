@@ -3,9 +3,11 @@
 define(
     [
         'Magento_Checkout/js/view/payment/default',
-        'jquery'
+        'jquery',
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Checkout/js/checkout-data',
     ],
-    function (Component, $) {
+    function (Component, $, selectPaymentMethodAction, checkoutData) {
         'use strict';
 
         return Component.extend({
@@ -66,6 +68,10 @@ define(
                     scripts = [],
                 } = window.checkoutConfig.integrai_boleto || {};
 
+                const $form = $('#co-shipping-form');
+
+                console.log('$form', $form);
+
                 window.IntegraiBoleto = {
                     ...formOptions,
                     boletoModel: window.checkoutConfig.integrai_customer
@@ -76,6 +82,46 @@ define(
                     scriptElm.src = script;
                     document.head.appendChild(scriptElm);
                 });
+            },
+
+            selectPaymentMethod: function () {
+                const $form = $('#co-shipping-form');
+
+                if ($form.length > 0) {
+                    const formData = $form.serializeArray();
+
+                    const props = {
+                        companyName: 'company',
+                        addressStreet: 'street[0]',
+                        addressNumber: 'street[1]',
+                        addressCity: 'city',
+                        addressState: 'region_id',
+                        addressZipCode: 'postcode',
+                        docNumber: 'vat_id',
+                        name: 'firstname',
+                        lastName: 'lastname',
+                    };
+
+                    Object.keys(props).forEach((key) => {
+                        const prop = props[key];
+                        let value = (formData.find(item => item.name === prop) || {}).value;
+
+                        if (key === 'addressState' && Array.isArray(window.checkoutConfig.integrai_regions)) {
+                            value = window.checkoutConfig.integrai_regions.find(region => region.region_id === value).code;
+                        }
+
+                        window.checkoutConfig.integrai_customer[key] = value;
+                    });
+
+                    const event = new Event('modelChangeBoleto');
+                    event.data = window.checkoutConfig.integrai_customer;
+                    document.dispatchEvent(event);
+                }
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+
+                return true;
             },
 
             afterPlaceOrder: function () {
