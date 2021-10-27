@@ -104,18 +104,16 @@ class Order {
         $shippingPrice = $orderData['order']['shipping_amount'];
 
         $order = $this->_quoteManagement->submit($quote);
-        $order->setEmailSent(0);;
+        $order->setEmailSent(0);
 
-        $order->setExtOrderId($orderData['order']['id']);
+        $order->setExtOrderId($orderData['order']['external_id']);
         $order->setShippingAmount($shippingPrice);
         $order->setBaseShippingAmount($shippingPrice);
         $order->setShippingDescription($shippingDescription);
         $order->setGrandTotal($order->getSubTotal() + $shippingPrice);
         $order->getPayment()->setAdditionalInformation(array(
-            "payment_response" => array(
-                "module_name" => $orderData['order']['marketplace'],
-                "marketplace_id" => $orderData['order']['id'],
-            )
+            "marketplace" => isset($orderData['marketplace']) ? $orderData['marketplace'] : '',
+            "payments" => isset($orderData['payments']) ? $orderData['payments'] : ''
         ));
         $order->save();
 
