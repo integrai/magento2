@@ -11,13 +11,15 @@ class CreateOrEditProduct implements ObserverInterface{
     private $_attributeFactory;
     private $_productModel;
     private $_categoryCollectionFactory;
+    private $_productConfigurable;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
         \Integrai\Core\Model\Api $api,
         \Magento\Catalog\Model\ResourceModel\Eav\Attribute $attributeFactory,
         \Magento\Catalog\Model\Product $productModel,
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory,
+        \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $productConfigurable
     )
     {
         $this->_helper = $helper;
@@ -25,6 +27,7 @@ class CreateOrEditProduct implements ObserverInterface{
         $this->_attributeFactory = $attributeFactory;
         $this->_productModel = $productModel;
         $this->_categoryCollectionFactory = $categoryCollectionFactory;
+        $this->_productConfigurable = $productConfigurable;
     }
 
     protected function _getHelper(){
@@ -39,8 +42,15 @@ class CreateOrEditProduct implements ObserverInterface{
     public function execute(\Magento\Framework\Event\Observer $observer) {
         $product = $observer->getEvent()->getProduct();
         $event = empty($product->getOrigData('sku')) ? Events::CREATE_PRODUCT : Events::UPDATE_PRODUCT;
+        $isVariation = $product->getVisibility() == 1 && $event === Events::CREATE_PRODUCT;
+        $parentIds = $this->_productConfigurable->getParentIdsByChild($product->getId());
 
-        if ($this->_getHelper()->isEventEnabled($event)) {
+        if (isset($parentIds) && count($parentIds) > 0) {
+            $product = $this->_productModel->load($parentIds[0]);
+            $isVariation = false;
+        }
+
+        if ($this->_getHelper()->isEventEnabled($event) && !$isVariation) {
             $data = $this->enrichProductAttributes($product);
             $data['photos'] = $this->getProductPhotos($product);
             $data['categories'] = $this->getProductCategories($product);
@@ -54,7 +64,6 @@ class CreateOrEditProduct implements ObserverInterface{
                     $variationData = $this->enrichProductAttributes($productVariation);
                     $variationData['photos'] = $this->getProductPhotos($variation);
                     $variationData['categories'] = $this->getProductCategories($variation);
-                    $this->_getHelper()->log('variation', $variationData);
                     array_push($data['variations'], $variationData);
                 }
             }

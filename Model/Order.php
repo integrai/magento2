@@ -10,6 +10,7 @@ class Order {
     private $_quoteRepository;
     private $_quoteManagement;
     private $_customerRepository;
+    private $_country;
 
     public function __construct(
         \Integrai\Core\Helper\Data $helper,
@@ -18,7 +19,8 @@ class Order {
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Quote\Api\CartManagementInterface $quoteManagement,
-        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+        \Magento\Directory\Model\Country $country
     )
     {
         $this->_helper = $helper;
@@ -28,6 +30,7 @@ class Order {
         $this->_quoteRepository = $quoteRepository;
         $this->_quoteManagement = $quoteManagement;
         $this->_customerRepository = $customerRepository;
+        $this->_country = $country;
     }
 
     protected function _getHelper(){
@@ -53,6 +56,7 @@ class Order {
             );
         }
 
+        $billingRegion = !empty($orderData['billing_address']['address_state_code']) ? $orderData['billing_address']['address_state_code'] : $this->getRegion($orderData['billing_address']);
         $quote->getBillingAddress()->addData(array(
             'firstname' => $orderData['billing_address']['firstname'],
             'lastname' => $orderData['billing_address']['lastname'],
@@ -64,12 +68,13 @@ class Order {
             ),
             'city' => $orderData['billing_address']['address_city'],
             'country_id' => 'BR',
-            'region' => $orderData['billing_address']['address_state_code'],
+            'region' => $billingRegion,
             'postcode' => $orderData['billing_address']['address_zipcode'],
             'telephone' => $orderData['billing_address']['telephone'],
             'save_in_address_book' => 1
         ));
 
+        $shippingRegion = !empty($orderData['shipping_address']['address_state_code']) ? $orderData['shipping_address']['address_state_code'] : $this->getRegion($orderData['shipping_address']);
         $quote->getShippingAddress()->addData(array(
             'firstname' => $orderData['shipping_address']['firstname'],
             'lastname' => $orderData['shipping_address']['lastname'],
@@ -81,7 +86,7 @@ class Order {
             ),
             'city' => $orderData['shipping_address']['address_city'],
             'country_id' => 'BR',
-            'region' => $orderData['shipping_address']['address_state_code'],
+            'region' => $shippingRegion,
             'postcode' => $orderData['shipping_address']['address_zipcode'],
             'telephone' => $orderData['shipping_address']['telephone'],
             'save_in_address_book' => 1
@@ -118,5 +123,18 @@ class Order {
         $order->save();
 
         return $order->getData();
+    }
+
+
+    private function getRegion($address) {
+        foreach ($this->_country->loadByCode('BR')->getRegions() as $region) {
+            $addressState = strtolower($address['address_state']);
+
+            if ($addressState === strtolower($region->getName()) || $addressState === strtolower($region->getDefaultName())) {
+                return $region->getCode();
+            }
+        }
+
+        return null;
     }
 }
