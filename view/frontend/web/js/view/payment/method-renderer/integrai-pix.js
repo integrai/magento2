@@ -103,7 +103,11 @@ define(
                         let value = (formData.find(item => item.name === prop) || {}).value;
 
                         if (key === 'addressState' && Array.isArray(window.checkoutConfig.integrai_regions)) {
-                            value = window.checkoutConfig.integrai_regions.find(region => region.region_id === value).code;
+                            const region = window.checkoutConfig.integrai_regions.find(region => String(region.region_id) === String(value));
+
+                            if (region) {
+                                value = region.code;
+                            }
                         }
 
                         window.checkoutConfig.integrai_customer[key] = value;
