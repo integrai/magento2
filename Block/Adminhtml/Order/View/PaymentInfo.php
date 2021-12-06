@@ -24,8 +24,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
         $marketplace_data = array();
         $payments_data = array();
-        $marketplace = array_filter((array) !empty($paymentAdditionalInformation['marketplace'] ) ? $paymentAdditionalInformation['marketplace'] : array());
-        $payments = array_filter((array) !empty($paymentAdditionalInformation['payments']) ? $paymentAdditionalInformation['payments'] : array());
+        $marketplace = array_filter((array) isset($paymentAdditionalInformation) && !isset($paymentAdditionalInformation['marketplace'] ) ? $paymentAdditionalInformation['marketplace'] : array());
+        $payments = array_filter((array) isset($paymentAdditionalInformation) && !isset($paymentAdditionalInformation['payments']) ? $paymentAdditionalInformation['payments'] : array());
 
         if (isset($marketplace) && count($marketplace) > 0) {
             $name = !empty($marketplace['name']) ? $marketplace['name'] : '';
