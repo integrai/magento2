@@ -1,7 +1,7 @@
 <?php
 namespace Integrai\Core\Controller\Config;
 
-class Config extends \Magento\Framework\App\Action\Action
+class Config extends \Magento\Framework\App\Action\Action implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
     protected $_pageFactory;
     protected $_resultJsonFactory;
@@ -43,8 +43,14 @@ class Config extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         try{
-            $this->_getHelper()->log('Buscando novas configurações...');
-            $configs = $this->_getApi()->request('/store/config');
+            if (!$this->_helper->checkAuthorization($this->getRequest()->getHeader('Authorization'))) {
+                return $this->_resultJsonFactory->create()
+                    ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_UNAUTHORIZED)
+                    ->setData(array("error" => "Unauthorized"));
+            }
+
+            $this->_getHelper()->log('Salvando novas configurações');
+            $configs = json_decode($this->getRequest()->getContent(), true);;
 
             foreach ($configs as $config) {
                 $configItem = $this->_configFactory->create()->load($config['name'], 'name');

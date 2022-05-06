@@ -5,6 +5,7 @@ class Attributes extends \Magento\Framework\App\Action\Action
 {
     protected $_pageFactory;
     protected $_resultJsonFactory;
+    protected $_helper;
     protected $_attributeRepository;
     protected $_searchCriteriaBuilder;
 
@@ -12,19 +13,31 @@ class Attributes extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        \Integrai\Core\Helper\Data $helper,
         \Magento\Eav\Api\AttributeRepositoryInterface $attributeRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->_pageFactory = $pageFactory;
         $this->_resultJsonFactory = $resultJsonFactory;
+        $this->_helper = $helper;
         $this->_attributeRepository = $attributeRepository;
         $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
         return parent::__construct($context);
     }
 
+    protected function _getHelper(){
+        return $this->_helper;
+    }
+
     public function execute()
     {
+        if (!$this->_helper->checkAuthorization($this->getRequest()->getHeader('Authorization'))) {
+            return $this->_resultJsonFactory->create()
+                ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_UNAUTHORIZED)
+                ->setData(array("error" => "Unauthorized"));
+        }
+
         $searchCriteria = $this->_searchCriteriaBuilder->create();
         $attributes = $this->_attributeRepository->getList(
             'catalog_product',
