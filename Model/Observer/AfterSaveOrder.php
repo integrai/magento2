@@ -34,7 +34,7 @@ class AfterSaveOrder implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer) {
-        if ($this->_getHelper()->isEventEnabled(Events::SAVE_ORDER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::UPDATE_ORDER)) {
             $order = $observer->getEvent()->getOrder();
             $customer = $this->getCustomerInfo($order);
 
@@ -76,7 +76,7 @@ class AfterSaveOrder implements ObserverInterface{
             $data->setItems($items);
             $data->setShippingMethod($order->getShippingMethod());
 
-            return $this->_getApi()->sendEvent(Events::SAVE_ORDER, $data->getData());
+            return $this->_getApi()->sendEvent(Events::UPDATE_ORDER, $data->getData());
         }
     }
 
