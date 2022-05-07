@@ -48,10 +48,22 @@ class Attributes extends \Magento\Framework\App\Action\Action
 
         foreach ($attributes as $attribute) {
             $label = $attribute->getStoreLabel() ?: $attribute->getFrontendLabel();
+
             if ($label) {
+                $values = [];
+
+                if ($attribute->getFrontendInput() === "select") {
+                    foreach ($attribute->getSource()->getAllOptions() as $option) {
+                        if ($option['value'] && $option['label']) {
+                            $values[] = $option['label'];
+                        }
+                    }
+                }
+
                 $options[] = array(
+                    "code" => $attribute->getAttributeCode(),
                     "label" => $label,
-                    "value" => $attribute->getAttributeCode(),
+                    "values" => $values
                 );
             }
         }
