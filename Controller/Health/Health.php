@@ -83,10 +83,12 @@ class Health extends \Magento\Framework\App\Action\Action
             return $this->_resultJsonFactory->create()->setData($data);
         } catch (\Throwable $e) {
             $this->_getHelper()->log('Health error', $e->getMessage());
-            return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => false,
-                "error" => $e->getMessage()
-            ));
+            return $this->_resultJsonFactory->create()
+                ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR)
+                ->setData(array(
+                    'ok' => false,
+                    "error" => $e->getMessage()
+                ));
         }
     }
 }

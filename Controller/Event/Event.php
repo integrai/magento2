@@ -2,7 +2,7 @@
 
 namespace Integrai\Core\Controller\Event;
 
-class Event extends \Magento\Framework\App\Action\Action
+class Event extends \Magento\Framework\App\Action\Action implements \Magento\Framework\App\Action\HttpPostActionInterface
 {
     protected $_request;
     protected $_resultJsonFactory;
@@ -11,6 +11,7 @@ class Event extends \Magento\Framework\App\Action\Action
     protected $_connection;
     protected $_resource;
     protected $_processEventsFactory;
+    protected $_processEvent;
 
     public function __construct(
         \Magento\Framework\App\Request\Http $request,
@@ -19,7 +20,8 @@ class Event extends \Magento\Framework\App\Action\Action
         \Integrai\Core\Helper\Data $helper,
         \Integrai\Core\Model\Api $api,
         \Magento\Framework\App\ResourceConnection $resource,
-        \Integrai\Core\Model\ProcessEventsFactory $processEventsFactory
+        \Integrai\Core\Model\ProcessEventsFactory $processEventsFactory,
+        \Integrai\Core\Model\ProcessEvent $processEvent
     )
     {
         $this->_request = $request;
@@ -29,6 +31,7 @@ class Event extends \Magento\Framework\App\Action\Action
         $this->_connection = $resource->getConnection();
         $this->_resource = $resource;
         $this->_processEventsFactory = $processEventsFactory;
+        $this->_processEvent = $processEvent;
 
         return parent::__construct($context);
     }
@@ -43,67 +46,47 @@ class Event extends \Magento\Framework\App\Action\Action
 
     public function execute() {
         try{
-            $batchIdParam = $this->_request->getParam('batchId');
-            $batchId = isset($batchIdParam) ? trim($batchIdParam) : "";
-            $events = $this->_getApi()->request(
-                '/store/event',
-                'GET',
-                null,
-                array("batchId" => $batchId)
-            );
-
-            $this->_getHelper()->log('Total de eventos carregados: ', count($events));
-
-            if (count($events) > 0) {
-                $eventIds = array_map(function ($event) {
-                    return $event['_id'];
-                }, $events);
-
-                $actualEvents = $this->_processEventsFactory
-                    ->create()
-                    ->getCollection()
-                    ->addFieldToFilter(
-                        'event_id',
-                        array('in' => $eventIds)
-                    )
-                    ->load();
-
-                $actualEventIds = array();
-                foreach ($actualEvents as $actualEvent) {
-                    $actualEventIds[] = $actualEvent->getData('event_id');
-                }
-
-                $data = array();
-                foreach ($events as $event) {
-                    $eventId = $event['_id'];
-
-                    if (!in_array($eventId, $actualEventIds)) {
-                        $data[] = array(
-                            'event_id' => $eventId,
-                            'event' => $event['event'],
-                            'payload' => json_encode($event['payload']),
-                            'created_at' => strftime('%Y-%m-%d %H:%M:%S', time()),
-                        );
-                    }
-                }
-
-                $this->_getHelper()->log('Total de eventos agendado para processar: ', count($data));
-
-                if (count($data) > 0) {
-                    $tableName = $this->_resource->getTableName('integrai_process_events');
-                    $this->_connection->insertMultiple($tableName, $data);
-                }
+            if (!$this->_helper->checkAuthorization($this->getRequest()->getHeader('Authorization'))) {
+                return $this->_resultJsonFactory->create()
+                    ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_UNAUTHORIZED)
+                    ->setData(array("error" => "Unauthorized"));
             }
 
-            return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => true
-            ));
+            $body = json_decode($this->getRequest()->getContent(), true);
+            $eventId = $body['eventId'];
+            $event = $body['event'];
+            $payload = $body['payload'];
+            $isSync = (bool)$body['isSync'];
+
+            if ($isSync) {
+                $this->_getHelper()->log('Executando evento', $event);
+
+                $response = $this->_processEvent->process($payload);
+
+                return $this->_resultJsonFactory->create()->setData($response);
+            } else {
+                $this->_getHelper()->log('Salvando o evento', $event);
+
+                $this->_processEventsFactory->create()
+                    ->setData(array(
+                        'event_id' => $eventId,
+                        'event' => $event,
+                        'payload' => json_encode($payload),
+                    ))
+                    ->save();
+
+                return $this->_resultJsonFactory->create()->setData(array(
+                    'ok' => true
+                ));
+            }
         } catch (\Throwable $e) {
-            $this->_getHelper()->log('Erro ao salvar os eventos', $e->getMessage());
-            return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => false,
-                "error" => $e->getMessage()
-            ));
+            $this->_getHelper()->log('Erro ao salvar o evento', $e->getMessage());
+            return $this->_resultJsonFactory->create()
+                ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR)
+                ->setData(array(
+                    'ok' => false,
+                    "error" => $e->getMessage()
+                ));
         }
     }
 }
