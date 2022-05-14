@@ -76,12 +76,12 @@ class Api {
         );
     }
 
-    public function sendEvent($eventName, $payload, $resend = false) {
+    public function sendEvent($eventName, $payload, $resend = false, $isSync = false) {
         try{
             $response = $this->request(array(
                 'partnerEvent' => $eventName,
                 'payload' => $payload,
-            ));
+            ), array( 'isSync' => $isSync ));
             $this->_getHelper()->log($eventName, 'Enviado com sucesso');
             return $response;
         } catch (\Throwable $e) {

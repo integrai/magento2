@@ -84,7 +84,7 @@ class Carrier
         if ($this->_getHelper()->isEventEnabled(Events::QUOTE)) {
             try{
                 $params = $this->prepareParamsRequest($request);
-                $services = $this->_getApi()->request('/quote/shipping', 'POST', $params);
+                $services = $this->_getApi()->sendEvent(Events::QUOTE, $params, false, true);
 
                 $result = $this->_resultFactory->create();
                 foreach ($services as $service) {

@@ -18,4 +18,6 @@ class Events{
     const CREATE_PRODUCT = 'CREATE_PRODUCT';
     const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
     const DELETE_PRODUCT = 'DELETE_PRODUCT';
+    const BOLETO_URL = 'BOLETO_URL';
+    const PIX = 'PIX';
 }
