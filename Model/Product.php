@@ -63,6 +63,8 @@ class Product {
             }
 
             $product->save();
+
+            return $product->getId();
         }
     }
 }
