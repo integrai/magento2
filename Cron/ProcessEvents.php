@@ -132,11 +132,6 @@ class ProcessEvents
 
                 // Delete events
                 if (count($success) > 0 || count($errors) > 0) {
-                    $this->_getApi()->request('/store/event', 'DELETE', array(
-                        'eventIds' => $success,
-                        'errors' => $errors
-                    ));
-
                     $tableName = $this->_resource->getTableName('integrai_process_events');
 
                     $eventIdsRemove = implode(', ', $eventIds);

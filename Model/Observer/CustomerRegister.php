@@ -30,13 +30,16 @@ class CustomerRegister implements ObserverInterface{
         return $this->_api;
     }
 
-    public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::SAVE_CUSTOMER)) {
+    public function execute(\Magento\Framework\Event\Observer $observer) {
+        $isNewCustomer = $observer->getData('orig_customer_data_object') === null;
+        $event = $isNewCustomer ? Events::CREATE_CUSTOMER : Events::UPDATE_CUSTOMER;
+
+        if ($this->_getHelper()->isEventEnabled($event)) {
             $customer = $this->_customer->load($observer->getData('customer_data_object')->getId());
             $document = preg_replace('/\D/', '', $customer['taxvat']);
             $customer['document_type'] = strlen($document) > 11 ? 'cnpj' : 'cpf';
 
-            return $this->_getApi()->sendEvent(Events::SAVE_CUSTOMER, $customer->getData());
+            return $this->_getApi()->sendEvent($event, $customer->getData());
         }
     }
 }

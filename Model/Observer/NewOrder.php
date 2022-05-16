@@ -38,7 +38,7 @@ class NewOrder implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::NEW_ORDER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::CREATE_ORDER)) {
             $order = $observer->getEvent()->getOrder();
             $order->setCreatedAt(date(DATE_ATOM));
             $customer = $this->getCustomerInfo($order);
@@ -94,14 +94,14 @@ class NewOrder implements ObserverInterface{
             $data->setItems($items);
             $data->setShippingMethod($order->getShippingMethod());
 
-            $this->_getApi()->sendEvent(Events::NEW_ORDER, $data->getData());
+            $this->_getApi()->sendEvent(Events::CREATE_ORDER, $data->getData());
 
-            if ($this->_getHelper()->isEventEnabled(Events::NEW_ORDER_ITEM)) {
+            if ($this->_getHelper()->isEventEnabled(Events::UPDATE_ORDER_ITEM)) {
                 foreach ($items as $item) {
                     $item['order_id'] = $order->getIncrementId();
                     $item['customer'] = $customer;
 
-                    $this->_getApi()->sendEvent(Events::NEW_ORDER_ITEM, $item);
+                    $this->_getApi()->sendEvent(Events::UPDATE_ORDER_ITEM, $item);
                 }
             }
         }

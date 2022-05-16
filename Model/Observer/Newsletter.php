@@ -28,10 +28,10 @@ class Newsletter implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::NEWSLETTER_SUBSCRIBER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::CREATE_LEAD)) {
             $subscriber = $observer->getEvent()->getSubscriber();
             if ($subscriber->isStatusChanged()) {
-                return $this->_getApi()->sendEvent(Events::NEWSLETTER_SUBSCRIBER, $subscriber->getData());
+                return $this->_getApi()->sendEvent(Events::CREATE_LEAD, $subscriber->getData());
             }
         }
     }

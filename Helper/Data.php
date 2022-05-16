@@ -68,4 +68,11 @@ class Data
     public function getGlobalConfig($configName, $defaultValue = null) {
         return $this->getConfigTable('GLOBAL', $configName, $defaultValue);
     }
+
+    public function checkAuthorization($hash) {
+        $apiKey = $this->getConfig('api_key');
+        $secretKey = $this->getConfig('secret_key');
+        $token = base64_encode("{$apiKey}:{$secretKey}");
+        return $token === str_replace('Basic ', '', $hash);
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace Integrai\Core\Controller\Payment;
 
+use Integrai\Core\Model\Observer\Events;
+
 class Boleto extends \Magento\Framework\App\Action\Action
 {
     protected $_request;
@@ -47,10 +49,10 @@ class Boleto extends \Magento\Framework\App\Action\Action
                 throw new \Exception('Informe o ID do pedido');
             }
 
-            $response = $this->_getApi()->request('/store/boleto', 'GET', null, array(
+            $response = $this->_getApi()->sendEvent(Events::BOLETO_URL, array(
                 'orderId' => $order_id,
                 'isDuplicate' => $is_duplicate
-            ));
+            ), false, true);
 
             return $this->_resultJsonFactory->create()->setData($response);
         } catch (\Throwable $e) {

@@ -28,10 +28,10 @@ class CancelOrder implements ObserverInterface{
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer){
-        if ($this->_getHelper()->isEventEnabled(Events::CANCEL_ORDER)) {
+        if ($this->_getHelper()->isEventEnabled(Events::UPDATE_ORDER)) {
             $order = $observer->getEvent()->getOrder();
 
-            return $this->_getApi()->sendEvent(Events::CANCEL_ORDER, $order->getData());
+            return $this->_getApi()->sendEvent(Events::UPDATE_ORDER, $order->getData());
         }
     }
 }

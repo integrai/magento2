@@ -19,13 +19,13 @@ class Api {
         return $this->_helper;
     }
 
-    public function request($endpoint, $method = 'GET', $body = array(), $params = array()) {
+    public function request($body = array(), $params = array()) {
         $curl = curl_init();
 
-        $url = $this->getApiUrl() . $endpoint;
+        $url = $this->getApiUrl();
 
         if (isset($params) && count($params) > 0) {
-           $url = $url . '?' . http_build_query($params);
+           $url = $url . '&' . http_build_query($params);
        }
 
         $curl_options = array(
@@ -34,10 +34,9 @@ class Api {
             CURLOPT_TIMEOUT => $this->_getHelper()->getGlobalConfig('apiTimeoutSeconds', 2),
             CURLOPT_HTTPHEADER => $this->getHeaders(),
             CURLOPT_URL => $url,
-            CURLOPT_CUSTOMREQUEST => $method
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POST => true
         );
-
-        $curl_options[CURLOPT_POST] = $method === 'POST';
 
         if (!is_null($body) && count($body) > 0) {
             $curl_options[CURLOPT_POSTFIELDS] = json_encode($body);
@@ -49,7 +48,7 @@ class Api {
         $info = curl_getinfo($curl);
         $response_error = isset($response['error']) ? $response['error'] : "Ocorreu um erro, tente novamente";
 
-        if($info['http_code'] !== 200) {
+        if(!in_array(array(200, 201, 204), $info['http_code'])) {
             $this->_getHelper()->log("HTTP ERROR", array(
                 'code' => curl_errno($curl),
                 'error' => curl_error($curl),
@@ -71,23 +70,18 @@ class Api {
     }
 
     private function getHeaders() {
-        $apiKey = $this->_getHelper()->getConfig('api_key');
-        $secretKey = $this->_getHelper()->getConfig('secret_key');
-        $token = base64_encode("{$apiKey}:{$secretKey}");
-
         return array(
             "Content-Type: application/json",
             "Accept: application/json",
-            "Authorization: Basic {$token}"
         );
     }
 
-    public function sendEvent($eventName, $payload, $resend = false) {
+    public function sendEvent($eventName, $payload, $resend = false, $isSync = false) {
         try{
-            $response = $this->request('/store/event/magento2', 'POST', array(
-                'event' => $eventName,
+            $response = $this->request(array(
+                'partnerEvent' => $eventName,
                 'payload' => $payload,
-            ));
+            ), array( 'isSync' => $isSync ));
             $this->_getHelper()->log($eventName, 'Enviado com sucesso');
             return $response;
         } catch (\Throwable $e) {

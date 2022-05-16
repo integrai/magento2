@@ -5,20 +5,29 @@ class Categories extends \Magento\Framework\App\Action\Action
 {
     protected $_resultJsonFactory;
     protected $_adminCategoryTree;
+    protected $_helper;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Magento\Catalog\Block\Adminhtml\Category\Tree $adminCategoryTree
+        \Magento\Catalog\Block\Adminhtml\Category\Tree $adminCategoryTree,
+        \Integrai\Core\Helper\Data $helper
     )
     {
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_adminCategoryTree = $adminCategoryTree;
+        $this->_helper = $helper;
         return parent::__construct($context);
     }
 
     public function execute()
     {
+        if (!$this->_helper->checkAuthorization($this->getRequest()->getHeader('Authorization'))) {
+            return $this->_resultJsonFactory->create()
+                ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_UNAUTHORIZED)
+                ->setData(array("error" => "Unauthorized"));
+        }
+
         $categories = $this->_adminCategoryTree->getTree();
         return $this->_resultJsonFactory->create()->setData($this->transformCategory($categories));
     }

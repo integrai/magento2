@@ -2,6 +2,8 @@
 
 namespace Integrai\Core\Controller\Payment;
 
+use Integrai\Core\Model\Observer\Events;
+
 class Pix extends \Magento\Framework\App\Action\Action
 {
     protected $_request;
@@ -46,9 +48,9 @@ class Pix extends \Magento\Framework\App\Action\Action
                 throw new \Exception('Informe o ID do pedido');
             }
 
-            $response = $this->_getApi()->request('/store/pix', 'GET', null, array(
+            $response = $this->_getApi()->sendEvent(Events::PIX, array(
                 'orderId' => $order_id,
-            ));
+            ), false, true);
 
             return $this->_resultJsonFactory->create()->setData($response);
         } catch (\Exception $e) {

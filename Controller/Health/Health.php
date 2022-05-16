@@ -46,6 +46,12 @@ class Health extends \Magento\Framework\App\Action\Action
 
     public function execute() {
         try{
+            if (!$this->_helper->checkAuthorization($this->getRequest()->getHeader('Authorization'))) {
+                return $this->_resultJsonFactory->create()
+                    ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_UNAUTHORIZED)
+                    ->setData(array("error" => "Unauthorized"));
+            }
+
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
             $magentoVersion = $productMetadata->getVersion();;
@@ -72,23 +78,17 @@ class Health extends \Magento\Framework\App\Action\Action
                 'totalUnsentEvent' => $totalUnsentEvent
             );
 
-            $this->_getApi()->request(
-                '/store/health',
-                'POST',
-                $data
-            );
-
             $this->_getHelper()->log('Health executado');
 
-            return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => true
-            ));
+            return $this->_resultJsonFactory->create()->setData($data);
         } catch (\Throwable $e) {
             $this->_getHelper()->log('Health error', $e->getMessage());
-            return $this->_resultJsonFactory->create()->setData(array(
-                'ok' => false,
-                "error" => $e->getMessage()
-            ));
+            return $this->_resultJsonFactory->create()
+                ->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_INTERNAL_ERROR)
+                ->setData(array(
+                    'ok' => false,
+                    "error" => $e->getMessage()
+                ));
         }
     }
 }
