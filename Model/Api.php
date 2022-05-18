@@ -48,7 +48,7 @@ class Api {
         $info = curl_getinfo($curl);
         $response_error = isset($response['error']) ? $response['error'] : "Ocorreu um erro, tente novamente";
 
-        if(!in_array(array(200, 201, 204), $info['http_code'])) {
+        if(!in_array((int)$info['http_code'], array(200, 201, 204))) {
             $this->_getHelper()->log("HTTP ERROR", array(
                 'code' => curl_errno($curl),
                 'error' => curl_error($curl),
