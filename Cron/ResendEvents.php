@@ -39,12 +39,15 @@ class ResendEvents
 
             foreach ($events as $event) {
                 $eventName = $event->getData('event');
-                $payload = json_decode($event->getData('payload'), true);
-                try{
-                    $this->_getApi()->sendEvent($eventName, $payload, true);
-                    $event->delete();
-                } catch (\Throwable $e) {
-                    $this->_getHelper()->log("Error ao reenviar o evento: ", $e->getMessage());
+
+                if ($this->_getHelper()->isEventEnabled($eventName)) {
+                    $payload = json_decode($event->getData('payload'), true);
+                    try{
+                        $this->_getApi()->sendEvent($eventName, $payload, true);
+                        $event->delete();
+                    } catch (\Throwable $e) {
+                        $this->_getHelper()->log("Error ao reenviar o evento: ", $e->getMessage());
+                    }
                 }
             }
         }
