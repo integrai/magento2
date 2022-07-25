@@ -50,7 +50,7 @@ class AbandonedCart
     {
       $items = array();
 
-      foreach ($quote->getAllVisibleItems() as $item) {
+      foreach ($quote->getAllItems() as $item) {
         if ($item->getHasChildren()) {
           foreach ($item->getChildren() as $child) {
             $items[] = $this->_getQuoteData($child, $quote);
